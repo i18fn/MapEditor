@@ -9,7 +9,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.GridPane;
-
+import javafx.stage.FileChooser;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 /**
  * MapEditorクラス
  * ・レイアウトの配置、管理
@@ -48,7 +51,7 @@ public class MapEditor extends Application {
         MenuItem allDelete = new MenuItem("全消去");
         makeNewFile.setOnAction(event -> newFile());
         openFile.setOnAction(event -> openFile());
-        saveFile.setOnAction(event -> saveFile());
+        saveFile.setOnAction(event -> saveFile(stage));
         endEdit.setOnAction(event -> endEdit());
         eraser.setOnAction(event -> modeChange());
         allDelete.setOnAction(event -> fieldDelete());
@@ -122,7 +125,44 @@ public class MapEditor extends Application {
     }
     private void newFile(){}
     private void openFile(){}
-    private void saveFile(){}
+    private void saveFile(Stage stage){
+        FileChooser fc = new FileChooser();
+        fc.setTitle("ファイル選択");
+        fc.getExtensionFilters().addAll(
+            new FileChooser.ExtensionFilter("map形式", "*.map"),
+            new FileChooser.ExtensionFilter("すべてのファイル", "*.*")
+        );
+        outputToFile(fc.showSaveDialog(stage), mapInfoToString());
+    }
+    public static void outputToFile(File file, String str) {
+        try {
+            if (file != null) {
+                if (file.exists() == false) {
+                    file.createNewFile();
+                }
+                FileWriter fileWriter = new FileWriter(file);
+                fileWriter.write(str);
+                fileWriter.close();
+            } else {
+                return;
+            }
+        } catch(IOException e) {
+            System.out.println(e);
+        }
+    }
+    private String mapInfoToString() {
+    /* mapinfoの要素をStringに変換するメソッド */
+        String mapData = "";
+        StringBuilder buf = new StringBuilder();
+        for (int i = 0; i < column; i++) {
+            for (int j = 0; j < row; j++) {
+                buf.append(String.valueOf(mapField[j][i].getFieldNumber()));
+            }
+            buf.append("\n");
+        }
+        mapData = buf.toString();
+        return mapData;       
+    }
     private void endEdit(){}
     private void modeChange(){}
     private void fieldDelete(){}
