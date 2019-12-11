@@ -125,6 +125,7 @@ public class MapEditor extends Application {
     }
     private void newFile(){}
     private void openFile(){}
+    /* ファイル保存用の処理 */
     private void saveFile(Stage stage){
         FileChooser fc = new FileChooser();
         fc.setTitle("ファイル選択");
@@ -134,7 +135,7 @@ public class MapEditor extends Application {
         );
         outputToFile(fc.showSaveDialog(stage), mapInfoToString());
     }
-    public static void outputToFile(File file, String str) {
+    private void outputToFile(File file, String str) {
         try {
             if (file != null) {
                 if (file.exists() == false) {
@@ -163,9 +164,26 @@ public class MapEditor extends Application {
         mapData = buf.toString();
         return mapData;       
     }
+
     private void endEdit(){}
-    private void modeChange(){}
-    private void fieldDelete(){}
+    private void modeChange() {
+        switch (mFlag) {
+        case draw:
+            mFlag = MouseFlag.erase;
+            break;
+        case erase:
+            mFlag = MouseFlag.draw;
+            break;
+        }
+    }
+    private void fieldDelete() {
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < column; j++) {
+                mapField[i][j].setImage(mapChips[0]);
+                mapField[i][j].setFieldNumber(0);
+            }
+        }
+    }
     public static void main(String[] args) {
         launch(args);
     }
