@@ -11,6 +11,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 /**
@@ -50,7 +51,7 @@ public class MapEditor extends Application {
         MenuItem eraser = new MenuItem("消しゴム");
         MenuItem allDelete = new MenuItem("全消去");
         makeNewFile.setOnAction(event -> newFile());
-        openFile.setOnAction(event -> openFile());
+        openFile.setOnAction(event -> openFile(stage));
         saveFile.setOnAction(event -> saveFile(stage));
         endEdit.setOnAction(event -> endEdit());
         eraser.setOnAction(event -> modeChange());
@@ -123,17 +124,39 @@ public class MapEditor extends Application {
             return;
         }
     }
-    private void newFile(){}
-    private void openFile(){}
+    private void newFile() {
+        
+    }
+    private void openFile(Stage stage) {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("ファイル選択");
+        fc.setInitialDirectory(new File(System.getProperty("user.home")));
+        fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("map形式", "*.map"));
+        inputToFile(fc.showOpenDialog(null));
+        
+    }
+    private void inputToFile(File file) {
+        try {
+            if (file != null) {
+                FileReader fileReader = new FileReader(file);
+                int data;
+                while ((data = fileReader.read()) != -1) {
+                    System.out.print((char) data);
+                }
+                fileReader.close();
+            }
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+
     /* ファイル保存用の処理 */
     private void saveFile(Stage stage){
         FileChooser fc = new FileChooser();
         fc.setTitle("ファイル選択");
-        fc.getExtensionFilters().addAll(
-            new FileChooser.ExtensionFilter("map形式", "*.map"),
-            new FileChooser.ExtensionFilter("すべてのファイル", "*.*")
-        );
-        outputToFile(fc.showSaveDialog(stage), mapInfoToString());
+        fc.setInitialDirectory(new File(System.getProperty("user.home")));
+        fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("map形式", "*.map"));
+        outputToFile(fc.showSaveDialog(null), mapInfoToString());
     }
     private void outputToFile(File file, String str) {
         try {
@@ -147,7 +170,7 @@ public class MapEditor extends Application {
             } else {
                 return;
             }
-        } catch(IOException e) {
+        } catch (IOException e) {
             System.out.println(e);
         }
     }
