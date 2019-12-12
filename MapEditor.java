@@ -1,18 +1,22 @@
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import java.io.File;
 import java.io.FileReader;
@@ -42,10 +46,11 @@ public class MapEditor extends Application {
     private MapChip[][] mapField = new MapChip[ROW_MAX][COLUMN_MAX];
     /* パレット(マップチップ)の情報 */
     private Image[] mapChips = new Image[9];
+    private ImageView[] palette = new ImageView[9];
     public void start(Stage stage) throws Exception {
         stage.setTitle("マップエディタ");
-        stage.setWidth(1880);
-        stage.setHeight(1000);
+        stage.setWidth(1698);
+        stage.setHeight(1006);
 
         MenuBar menuBar = new MenuBar();
         Menu fileMenu = new Menu("ファイル");
@@ -67,27 +72,55 @@ public class MapEditor extends Application {
         menuBar.getMenus().addAll(fileMenu, editMenu);
 
         GridPane gridPane = new GridPane();
+        GridPane palettePane = new GridPane();
+
         initMapChips();
         initMapField(gridPane);
+        initPalette(palettePane);
 
+        Label lblMapChip = new Label("マップチップ");
+        lblMapChip.setFont(new Font(25));
+        HBox hBox = new HBox();
+        VBox vBox = new VBox();
         VBox root = new VBox();
-        root.getChildren().addAll(menuBar, gridPane);
+        vBox.getChildren().addAll(lblMapChip, palettePane);
+        hBox.getChildren().addAll(gridPane, vBox);
+        root.getChildren().addAll(menuBar, hBox);
         Scene scene = new Scene(root);
         scene.setOnMouseDragged(event -> mouseOnAction(event));
-        stage.setOnCloseRequest(event -> endEdit(stage));
+        stage.setOnCloseRequest(event -> endEdit(stage, event));
         stage.setScene(scene);
         stage.show();
     }
+    private void initPalette(GridPane palettePane) {
+        int a = 1;
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 4; j++) {
+                palettePane.add(palette[a], j, i);
+                a++;
+            }
+        }
+    }
     private void initMapChips() {
+        int size = 52;
         mapChips[0] = new Image("mapChip\\0.bmp");
         mapChips[1] = new Image("mapChip\\1.bmp");
-        mapChips[2] = new Image("mapChip\\1.bmp");
-        mapChips[3] = new Image("mapChip\\1.bmp");
-        mapChips[4] = new Image("mapChip\\1.bmp");
-        mapChips[5] = new Image("mapChip\\1.bmp");
-        mapChips[6] = new Image("mapChip\\1.bmp");
+        mapChips[2] = new Image("mapChip\\2.bmp");
+        mapChips[3] = new Image("mapChip\\3.bmp");
+        mapChips[4] = new Image("mapChip\\4.bmp");
+        mapChips[5] = new Image("mapChip\\5.bmp");
+        mapChips[6] = new Image("mapChip\\6.bmp");
         mapChips[7] = new Image("mapChip\\1.bmp");
-        mapChips[8] = new Image("mapChip\\1.bmp");
+        mapChips[8] = new Image("mapChip\\2.bmp");
+        
+        palette[1] = new ImageView(new Image("mapChip\\1.bmp", size, size, true, false));
+        palette[2] = new ImageView(new Image("mapChip\\2.bmp", size, size, true, false));
+        palette[3] = new ImageView(new Image("mapChip\\3.bmp", size, size, true, false));
+        palette[4] = new ImageView(new Image("mapChip\\4.bmp", size, size, true, false));
+        palette[5] = new ImageView(new Image("mapChip\\5.bmp", size, size, true, false));
+        palette[6] = new ImageView(new Image("mapChip\\6.bmp", size, size, true, false));
+        palette[7] = new ImageView(new Image("mapChip\\1.bmp", size, size, true, false));
+        palette[8] = new ImageView(new Image("mapChip\\2.bmp", size, size, true, false));
     }
     private void initMapField(GridPane gridPane) {
         for (int i = 0; i < ROW_MAX; i++) {
@@ -212,16 +245,31 @@ public class MapEditor extends Application {
 
     private void endEdit(Stage stage) {
         if (saveFlag) {
-            Alert alert = new Alert(AlertType.INFORMATION);
+            Alert alert = new Alert(AlertType.CONFIRMATION);
             alert.setTitle("マップエディタ");
-            alert.setHeaderText("加えた変更を保存しますか？");
-            alert.setContentText("保存しないと変更内容が失われます。");
+            alert.setHeaderText(null);
+            alert.setContentText("保存されていませんが終了しますか？");
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
-                saveFile(stage);
                 Platform.exit();
             } else {
+                return;
+            }
+        } else {
+            Platform.exit();
+        }
+    }
+    private void endEdit(Stage stage, WindowEvent event) {
+        if (saveFlag) {
+            Alert alert = new Alert(AlertType.CONFIRMATION);
+            alert.setTitle("マップエディタ");
+            alert.setHeaderText(null);
+            alert.setContentText("保存されていませんが終了しますか？");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK) {
                 Platform.exit();
+            } else {
+                event.consume();
             }
         } else {
             Platform.exit();
