@@ -23,6 +23,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Optional;
+
 /**
  * MapEditorクラス
  * ・レイアウトの配置、管理
@@ -69,7 +70,7 @@ public class MapEditor extends Application {
         saveFile.setOnAction(event -> saveFile(stage));
         endEdit.setOnAction(event -> endEdit(stage));
         eraser.setOnAction(event -> modeChange());
-        allDelete.setOnAction(event -> fieldDelete());
+        allDelete.setOnAction(event -> fieldAllDelete());
         fileMenu.getItems().addAll(makeNewFile, openFile, saveFile, endEdit);
         editMenu.getItems().addAll(allDelete, eraser);
         menuBar.getMenus().addAll(fileMenu, editMenu);
@@ -184,9 +185,19 @@ public class MapEditor extends Application {
         }
     }
     private void newFile() {
-        
+        if (saveFlag) {
+            Alert alert = new Alert(AlertType.CONFIRMATION);
+            alert.setTitle("マップエディタ");
+            alert.setHeaderText(null);
+            alert.setContentText("保存されていませんがファイルを新規作成しますか？");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                fieldAllDelete();
+            } else {
+                return;
+            }   
+        }
     }
-
     /* ファイルオープン用の処理 */
     private void openFile(Stage stage) {
         FileChooser fc = new FileChooser();
@@ -219,7 +230,6 @@ public class MapEditor extends Application {
             System.out.println(e);
         }
     }
-
     /* ファイル保存用の処理 */
     private void saveFile(Stage stage){
         FileChooser fc = new FileChooser();
@@ -258,7 +268,6 @@ public class MapEditor extends Application {
         mapData = buf.toString();
         return mapData;       
     }
-
     private void endEdit(Stage stage) {
         if (saveFlag) {
             Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -301,7 +310,7 @@ public class MapEditor extends Application {
             break;
         }
     }
-    private void fieldDelete() {
+    private void fieldAllDelete() {
         for (int i = 0; i < ROW_MAX; i++) {
             for (int j = 0; j < COLUMN_MAX; j++) {
                 mapField[i][j].setImage(mapChips[0]);
