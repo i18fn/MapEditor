@@ -47,6 +47,9 @@ public class MapEditor extends Application {
     /* パレット(マップチップ)の情報 */
     private Image[] mapChips = new Image[9];
     private ImageView[] palette = new ImageView[9];
+    /* 現在の配置するマップチップの情報 */
+    private int nowChipNumber = 1;
+    @Override
     public void start(Stage stage) throws Exception {
         stage.setTitle("マップエディタ");
         stage.setWidth(1698);
@@ -113,14 +116,27 @@ public class MapEditor extends Application {
         mapChips[7] = new Image("mapChip\\1.bmp");
         mapChips[8] = new Image("mapChip\\2.bmp");
         
-        palette[1] = new ImageView(new Image("mapChip\\1.bmp", size, size, true, false));
-        palette[2] = new ImageView(new Image("mapChip\\2.bmp", size, size, true, false));
-        palette[3] = new ImageView(new Image("mapChip\\3.bmp", size, size, true, false));
-        palette[4] = new ImageView(new Image("mapChip\\4.bmp", size, size, true, false));
-        palette[5] = new ImageView(new Image("mapChip\\5.bmp", size, size, true, false));
-        palette[6] = new ImageView(new Image("mapChip\\6.bmp", size, size, true, false));
-        palette[7] = new ImageView(new Image("mapChip\\1.bmp", size, size, true, false));
-        palette[8] = new ImageView(new Image("mapChip\\2.bmp", size, size, true, false));
+        palette[1] = new MapChip(new Image("mapChip\\1.bmp", size, size, true, false));
+        palette[2] = new MapChip(new Image("mapChip\\2.bmp", size, size, true, false));
+        palette[3] = new MapChip(new Image("mapChip\\3.bmp", size, size, true, false));
+        palette[4] = new MapChip(new Image("mapChip\\4.bmp", size, size, true, false));
+        palette[5] = new MapChip(new Image("mapChip\\5.bmp", size, size, true, false));
+        palette[6] = new MapChip(new Image("mapChip\\6.bmp", size, size, true, false));
+        palette[7] = new MapChip(new Image("mapChip\\1.bmp", size, size, true, false));
+        palette[8] = new MapChip(new Image("mapChip\\2.bmp", size, size, true, false));
+
+        palette[1].setOnMouseClicked(event -> chipChange(1));
+        palette[2].setOnMouseClicked(event -> chipChange(2));
+        palette[3].setOnMouseClicked(event -> chipChange(3));
+        palette[4].setOnMouseClicked(event -> chipChange(4));
+        palette[5].setOnMouseClicked(event -> chipChange(5));
+        palette[6].setOnMouseClicked(event -> chipChange(6));
+        palette[7].setOnMouseClicked(event -> chipChange(7));
+        palette[8].setOnMouseClicked(event -> chipChange(8));
+    }
+    private void chipChange(int chip) {
+        nowChipNumber = chip;
+        System.out.println(nowChipNumber);
     }
     private void initMapField(GridPane gridPane) {
         for (int i = 0; i < ROW_MAX; i++) {
@@ -151,8 +167,8 @@ public class MapEditor extends Application {
             saveFlag = true;
         }
         try {
-            mapField[x][y].setImage(mapChips[1]);
-            mapField[x][y].setFieldNumber(1);
+            mapField[x][y].setImage(mapChips[nowChipNumber]);
+            mapField[x][y].setFieldNumber(nowChipNumber);
         } catch (ArrayIndexOutOfBoundsException e) {
             return;
         }
@@ -168,7 +184,7 @@ public class MapEditor extends Application {
         }
     }
     private void newFile() {
-
+        
     }
 
     /* ファイルオープン用の処理 */
