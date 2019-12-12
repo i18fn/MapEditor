@@ -30,10 +30,10 @@ public class MapEditor extends Application {
     /* 初期設定では描画モード */
     private MouseFlag mFlag = MouseFlag.draw;
     /* マップフィールドの幅と高さの最大値 */
-    private final int row = 46;
-    private final int column = 29;
+    private final int ROW_MAX = 46;
+    private final int COLUMN_MAX = 29;
     /* 配置するマップチップの二次元配列 */
-    private MapChip[][] mapField = new MapChip[row][column];
+    private MapChip[][] mapField = new MapChip[ROW_MAX][COLUMN_MAX];
     /* パレット(マップチップ)の情報 */
     private Image[] mapChips = new Image[9];
     public void start(Stage stage) throws Exception {
@@ -83,8 +83,8 @@ public class MapEditor extends Application {
         mapChips[8] = new Image("mapChip\\1.bmp");
     }
     private void initMapField(GridPane gridPane) {
-        for (int i = 0; i < row; i++) {
-            for (int j = 0; j < column; j++) {
+        for (int i = 0; i < ROW_MAX; i++) {
+            for (int j = 0; j < COLUMN_MAX; j++) {
                 mapField[i][j] = new MapChip(mapChips[0], 0);
                 GridPane.setConstraints(mapField[i][j], i, j);
                 gridPane.getChildren().addAll(mapField[i][j]);
@@ -124,9 +124,7 @@ public class MapEditor extends Application {
             return;
         }
     }
-    private void newFile() {
-        
-    }
+    private void newFile() {}
     private void openFile(Stage stage) {
         FileChooser fc = new FileChooser();
         fc.setTitle("ファイル選択");
@@ -140,8 +138,18 @@ public class MapEditor extends Application {
             if (file != null) {
                 FileReader fileReader = new FileReader(file);
                 int data;
+                int row = 0;
+                int column = 0;
                 while ((data = fileReader.read()) != -1) {
-                    System.out.print((char) data);
+                    if (data == '\n') {
+                        column++;
+                        row = 0;
+                    } else {
+                        data = data & 0x0F;
+                        mapField[row][column].setImage(mapChips[data]);
+                        mapField[row][column].setFieldNumber(data);
+                        row++;                        
+                    }
                 }
                 fileReader.close();
             }
@@ -178,8 +186,8 @@ public class MapEditor extends Application {
     /* mapinfoの要素をStringに変換するメソッド */
         String mapData = "";
         StringBuilder buf = new StringBuilder();
-        for (int i = 0; i < column; i++) {
-            for (int j = 0; j < row; j++) {
+        for (int i = 0; i < COLUMN_MAX; i++) {
+            for (int j = 0; j < ROW_MAX; j++) {
                 buf.append(String.valueOf(mapField[j][i].getFieldNumber()));
             }
             buf.append("\n");
@@ -200,8 +208,8 @@ public class MapEditor extends Application {
         }
     }
     private void fieldDelete() {
-        for (int i = 0; i < row; i++) {
-            for (int j = 0; j < column; j++) {
+        for (int i = 0; i < ROW_MAX; i++) {
+            for (int j = 0; j < COLUMN_MAX; j++) {
                 mapField[i][j].setImage(mapChips[0]);
                 mapField[i][j].setFieldNumber(0);
             }
