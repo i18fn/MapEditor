@@ -1,9 +1,13 @@
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -14,6 +18,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Optional;
 /**
  * MapEditorクラス
  * ・レイアウトの配置、管理
@@ -29,6 +34,7 @@ public class MapEditor extends Application {
     };
     /* 初期設定では描画モード */
     private MouseFlag mFlag = MouseFlag.draw;
+    private boolean saveFlag = false;
     /* マップフィールドの幅と高さの最大値 */
     private final int ROW_MAX = 46;
     private final int COLUMN_MAX = 29;
@@ -53,7 +59,7 @@ public class MapEditor extends Application {
         makeNewFile.setOnAction(event -> newFile());
         openFile.setOnAction(event -> openFile(stage));
         saveFile.setOnAction(event -> saveFile(stage));
-        endEdit.setOnAction(event -> endEdit());
+        endEdit.setOnAction(event -> endEdit(stage));
         eraser.setOnAction(event -> modeChange());
         allDelete.setOnAction(event -> fieldDelete());
         fileMenu.getItems().addAll(makeNewFile, openFile, saveFile, endEdit);
@@ -68,6 +74,7 @@ public class MapEditor extends Application {
         root.getChildren().addAll(menuBar, gridPane);
         Scene scene = new Scene(root);
         scene.setOnMouseDragged(event -> mouseOnAction(event));
+        stage.setOnCloseRequest(event -> endEdit(stage));
         stage.setScene(scene);
         stage.show();
     }
@@ -107,6 +114,9 @@ public class MapEditor extends Application {
         // MenuBarの長さ分yを調整
         x /= 32;
         y = (y - 20) / 32;
+        if (saveFlag == false) {
+            saveFlag = true;
+        }
         try {
             mapField[x][y].setImage(mapChips[1]);
             mapField[x][y].setFieldNumber(1);
@@ -124,14 +134,17 @@ public class MapEditor extends Application {
             return;
         }
     }
-    private void newFile() {}
+    private void newFile() {
+
+    }
+
+    /* ファイルオープン用の処理 */
     private void openFile(Stage stage) {
         FileChooser fc = new FileChooser();
         fc.setTitle("ファイル選択");
         fc.setInitialDirectory(new File(System.getProperty("user.home")));
         fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("map形式", "*.map"));
         inputToFile(fc.showOpenDialog(null));
-        
     }
     private void inputToFile(File file) {
         try {
@@ -165,6 +178,7 @@ public class MapEditor extends Application {
         fc.setInitialDirectory(new File(System.getProperty("user.home")));
         fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("map形式", "*.map"));
         outputToFile(fc.showSaveDialog(null), mapInfoToString());
+        saveFlag = false;
     }
     private void outputToFile(File file, String str) {
         try {
@@ -196,7 +210,23 @@ public class MapEditor extends Application {
         return mapData;       
     }
 
-    private void endEdit(){}
+    private void endEdit(Stage stage) {
+        if (saveFlag) {
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("マップエディタ");
+            alert.setHeaderText("加えた変更を保存しますか？");
+            alert.setContentText("保存しないと変更内容が失われます。");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                saveFile(stage);
+                Platform.exit();
+            } else {
+                Platform.exit();
+            }
+        } else {
+            Platform.exit();
+        }
+    }
     private void modeChange() {
         switch (mFlag) {
         case draw:
