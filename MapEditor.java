@@ -1,7 +1,7 @@
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.Event;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -32,13 +32,6 @@ import java.util.Optional;
  */
 
 public class MapEditor extends Application {
-    /* 現在の状態(描画モードが消しゴムモード)を表す列挙型 */
-    private enum MouseFlag {
-        draw,
-        erase
-    };
-    /* 初期設定では描画モード */
-    private MouseFlag mFlag = MouseFlag.draw;
     private boolean saveFlag = false;
     /* マップフィールドの幅と高さの最大値 */
     private final int ROW_MAX = 46;
@@ -63,16 +56,14 @@ public class MapEditor extends Application {
         MenuItem openFile = new MenuItem("開く");
         MenuItem saveFile = new MenuItem("保存");
         MenuItem endEdit = new MenuItem("終了");
-        MenuItem eraser = new MenuItem("消しゴム");
         MenuItem allDelete = new MenuItem("全消去");
         makeNewFile.setOnAction(event -> newFile());
         openFile.setOnAction(event -> openFile(stage));
         saveFile.setOnAction(event -> saveFile(stage));
-        endEdit.setOnAction(event -> endEdit(stage));
-        eraser.setOnAction(event -> modeChange());
+        endEdit.setOnAction(event -> endEdit(stage, event));
         allDelete.setOnAction(event -> fieldAllDelete());
         fileMenu.getItems().addAll(makeNewFile, openFile, saveFile, endEdit);
-        editMenu.getItems().addAll(allDelete, eraser);
+        editMenu.getItems().addAll(allDelete);
         menuBar.getMenus().addAll(fileMenu, editMenu);
 
         GridPane gridPane = new GridPane();
@@ -97,7 +88,7 @@ public class MapEditor extends Application {
         stage.show();
     }
     private void initPalette(GridPane palettePane) {
-        int a = 1;
+        int a = 0;
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 4; j++) {
                 palettePane.add(palette[a], j, i);
@@ -107,37 +98,22 @@ public class MapEditor extends Application {
     }
     private void initMapChips() {
         int size = 52;
-        mapChips[0] = new Image("mapChip\\0.bmp");
-        mapChips[1] = new Image("mapChip\\1.bmp");
-        mapChips[2] = new Image("mapChip\\2.bmp");
-        mapChips[3] = new Image("mapChip\\3.bmp");
-        mapChips[4] = new Image("mapChip\\4.bmp");
-        mapChips[5] = new Image("mapChip\\5.bmp");
-        mapChips[6] = new Image("mapChip\\6.bmp");
-        mapChips[7] = new Image("mapChip\\1.bmp");
-        mapChips[8] = new Image("mapChip\\2.bmp");
-        
-        palette[1] = new MapChip(new Image("mapChip\\1.bmp", size, size, true, false));
-        palette[2] = new MapChip(new Image("mapChip\\2.bmp", size, size, true, false));
-        palette[3] = new MapChip(new Image("mapChip\\3.bmp", size, size, true, false));
-        palette[4] = new MapChip(new Image("mapChip\\4.bmp", size, size, true, false));
-        palette[5] = new MapChip(new Image("mapChip\\5.bmp", size, size, true, false));
-        palette[6] = new MapChip(new Image("mapChip\\6.bmp", size, size, true, false));
-        palette[7] = new MapChip(new Image("mapChip\\1.bmp", size, size, true, false));
-        palette[8] = new MapChip(new Image("mapChip\\2.bmp", size, size, true, false));
-
-        palette[1].setOnMouseClicked(event -> chipChange(1));
-        palette[2].setOnMouseClicked(event -> chipChange(2));
-        palette[3].setOnMouseClicked(event -> chipChange(3));
-        palette[4].setOnMouseClicked(event -> chipChange(4));
-        palette[5].setOnMouseClicked(event -> chipChange(5));
-        palette[6].setOnMouseClicked(event -> chipChange(6));
-        palette[7].setOnMouseClicked(event -> chipChange(7));
-        palette[8].setOnMouseClicked(event -> chipChange(8));
+        String url;
+        for (int i = 0; i < palette.length; i++) {
+            final int I = i;
+            url = "mapchip\\";
+            url = url + "\\" + String.valueOf(i) + ".bmp";
+            palette[i] = new MapChip(new Image(url, size, size, true, false));
+            palette[i].setOnMouseClicked(event -> chipChange(I));
+        }
+        for (int i = 0; i < mapChips.length; i++) {
+            url = "mapchip\\";
+            url = url + "\\" + String.valueOf(i) + ".bmp";
+            mapChips[i] = new Image(url);
+        }
     }
     private void chipChange(int chip) {
         nowChipNumber = chip;
-        System.out.println(nowChipNumber);
     }
     private void initMapField(GridPane gridPane) {
         for (int i = 0; i < ROW_MAX; i++) {
@@ -151,37 +127,20 @@ public class MapEditor extends Application {
     private void mouseOnAction(MouseEvent event) {
         int x = (int) event.getX();
         int y = (int) event.getY();
-        switch (mFlag) {
-        case draw:
-            draw(x, y);
-            break;
-        case erase:
-            delete(x, y);
-            break;
-        }
-    }
-    private void draw(int x, int y) {
         // MenuBarの長さ分yを調整
         x /= 32;
         y = (y - 20) / 32;
-        if (saveFlag == false) {
-            saveFlag = true;
-        }
+        draw(x, y);
+    }
+    private void draw(int x, int y) {
         try {
             mapField[x][y].setImage(mapChips[nowChipNumber]);
             mapField[x][y].setFieldNumber(nowChipNumber);
         } catch (ArrayIndexOutOfBoundsException e) {
             return;
         }
-    }
-    private void delete(int x, int y) {
-        x /= 32;
-        y = (y - 20) / 32;
-        try {
-            mapField[x][y].setImage(mapChips[0]);
-            mapField[x][y].setFieldNumber(0);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return;
+        if (saveFlag == false) {
+            saveFlag = true;
         }
     }
     private void newFile() {
@@ -196,6 +155,8 @@ public class MapEditor extends Application {
             } else {
                 return;
             }   
+        } else {
+            fieldAllDelete();
         }
     }
     /* ファイルオープン用の処理 */
@@ -268,23 +229,7 @@ public class MapEditor extends Application {
         mapData = buf.toString();
         return mapData;       
     }
-    private void endEdit(Stage stage) {
-        if (saveFlag) {
-            Alert alert = new Alert(AlertType.CONFIRMATION);
-            alert.setTitle("マップエディタ");
-            alert.setHeaderText(null);
-            alert.setContentText("保存されていませんが終了しますか？");
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == ButtonType.OK) {
-                Platform.exit();
-            } else {
-                return;
-            }
-        } else {
-            Platform.exit();
-        }
-    }
-    private void endEdit(Stage stage, WindowEvent event) {
+    private void endEdit(Stage stage, Event event) {
         if (saveFlag) {
             Alert alert = new Alert(AlertType.CONFIRMATION);
             alert.setTitle("マップエディタ");
@@ -298,16 +243,6 @@ public class MapEditor extends Application {
             }
         } else {
             Platform.exit();
-        }
-    }
-    private void modeChange() {
-        switch (mFlag) {
-        case draw:
-            mFlag = MouseFlag.erase;
-            break;
-        case erase:
-            mFlag = MouseFlag.draw;
-            break;
         }
     }
     private void fieldAllDelete() {
