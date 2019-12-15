@@ -73,12 +73,19 @@ public class MapEditor extends Application {
         initMapField(gridPane);
         initPalette(palettePane);
 
+        Label lblNowChip = new Label("現在のマップチップ");
+        lblNowChip.setFont(new Font(20));
+        ImageView nowChip = new ImageView(mapChips[nowChipNumber]);
+        HBox nowChipPane = new HBox();
+        nowChipPane.getChildren().addAll(lblNowChip, nowChip);
+
         Label lblMapChip = new Label("マップチップ");
         lblMapChip.setFont(new Font(25));
         HBox hBox = new HBox();
         VBox vBox = new VBox();
         VBox root = new VBox();
-        vBox.getChildren().addAll(lblMapChip, palettePane);
+        vBox.getChildren().addAll(lblMapChip, palettePane, nowChipPane);
+        vBox.setSpacing(5.0);
         hBox.getChildren().addAll(gridPane, vBox);
         root.getChildren().addAll(menuBar, hBox);
         Scene scene = new Scene(root);
