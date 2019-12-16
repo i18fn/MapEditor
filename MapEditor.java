@@ -6,8 +6,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Alert.AlertType;
@@ -43,6 +43,8 @@ public class MapEditor extends Application {
         stage.setTitle("マップエディタ");
         stage.setWidth(1698);
         stage.setHeight(1006);
+        // stage.setMaxWidth(1698);
+        // stage.setMaxHeight(1006);
 
         MenuBar menuBar = new MenuBar();
         Menu fileMenu = new Menu("ファイル");
@@ -76,12 +78,19 @@ public class MapEditor extends Application {
         HBox nowChipPane = new HBox();
         nowChipPane.getChildren().addAll(lblNowChip, nowChip);
 
+        Label lblLog = new Label("ログ");
+        lblLog.setFont(new Font(20));
+        TextArea logArea = new TextArea();
+        logArea.setWrapText(true);
+        logArea.setPrefHeight(490);
+        logArea.setEditable(false);
+
         Label lblMapChip = new Label("マップチップ");
         lblMapChip.setFont(new Font(25));
         HBox hBox = new HBox();
         VBox vBox = new VBox();
         VBox root = new VBox();
-        vBox.getChildren().addAll(lblMapChip, palettePane, nowChipPane, buttonPane);
+        vBox.getChildren().addAll(lblMapChip, palettePane, nowChipPane, buttonPane, lblLog, logArea);
         vBox.setSpacing(5.0);
         hBox.getChildren().addAll(gridPane, vBox);
         root.getChildren().addAll(menuBar, hBox);
