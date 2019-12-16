@@ -7,6 +7,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Alert.AlertType;
@@ -24,13 +25,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Optional;
 
-/**
- * MapEditorクラス
- * ・レイアウトの配置、管理
- * ・各メニューのメソッドの管理
- * ・ファイルのオープン、保存
- */
-
 public class MapEditor extends Application {
     private boolean saveFlag = false;
     /* マップフィールドの幅と高さの最大値 */
@@ -39,10 +33,11 @@ public class MapEditor extends Application {
     /* 配置するマップチップの二次元配列 */
     private MapChip[][] mapField = new MapChip[ROW_MAX][COLUMN_MAX];
     /* パレット(マップチップ)の情報 */
-    private Image[] mapChips = new Image[9];
-    private ImageView[] palette = new ImageView[9];
+    private Image[] mapChips = new Image[16];
+    private ImageView[] palette = new ImageView[16];
     /* 現在の配置するマップチップの情報 */
     private int nowChipNumber = 1;
+    private ImageView nowChip;
     @Override
     public void start(Stage stage) throws Exception {
         stage.setTitle("マップエディタ");
@@ -68,14 +63,16 @@ public class MapEditor extends Application {
 
         GridPane gridPane = new GridPane();
         GridPane palettePane = new GridPane();
+        GridPane buttonPane = new GridPane();
 
         initMapChips();
         initMapField(gridPane);
         initPalette(palettePane);
+        initButtons(buttonPane);
 
         Label lblNowChip = new Label("現在のマップチップ");
         lblNowChip.setFont(new Font(20));
-        ImageView nowChip = new ImageView(mapChips[nowChipNumber]);
+        nowChip = new ImageView(mapChips[nowChipNumber]);
         HBox nowChipPane = new HBox();
         nowChipPane.getChildren().addAll(lblNowChip, nowChip);
 
@@ -84,19 +81,41 @@ public class MapEditor extends Application {
         HBox hBox = new HBox();
         VBox vBox = new VBox();
         VBox root = new VBox();
-        vBox.getChildren().addAll(lblMapChip, palettePane, nowChipPane);
+        vBox.getChildren().addAll(lblMapChip, palettePane, nowChipPane, buttonPane);
         vBox.setSpacing(5.0);
         hBox.getChildren().addAll(gridPane, vBox);
         root.getChildren().addAll(menuBar, hBox);
         Scene scene = new Scene(root);
+        scene.setOnMouseClicked(event -> mouseOnAction(event));
         scene.setOnMouseDragged(event -> mouseOnAction(event));
         stage.setOnCloseRequest(event -> endEdit(stage, event));
         stage.setScene(scene);
         stage.show();
     }
+    private void initButtons(GridPane buttonPane) {
+        double width = 52;
+        double height = width;
+        ButtonX btnSave = new ButtonX(width, height);
+        ButtonX btnUndo = new ButtonX(width, height);
+        ButtonX btnRedo = new ButtonX(width, height);
+        ButtonX btnChipSet = new ButtonX(width, height);
+        ButtonX btnFill = new ButtonX(width, height);
+        ButtonX btnLine = new ButtonX(width, height);
+        ButtonX btnRect = new ButtonX(width, height);
+        ButtonX btnRectFill = new ButtonX(width, height);
+
+        buttonPane.add(btnSave, 0, 0);
+        buttonPane.add(btnUndo, 1, 0);
+        buttonPane.add(btnRedo, 2, 0);
+        buttonPane.add(btnChipSet, 3, 0);
+        buttonPane.add(btnFill, 0, 1);
+        buttonPane.add(btnLine, 1, 1);
+        buttonPane.add(btnRect, 2, 1);
+        buttonPane.add(btnRectFill, 3, 1);
+    }
     private void initPalette(GridPane palettePane) {
         int a = 0;
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
                 palettePane.add(palette[a], j, i);
                 a++;
@@ -121,6 +140,7 @@ public class MapEditor extends Application {
     }
     private void chipChange(int chip) {
         nowChipNumber = chip;
+        nowChip.setImage(mapChips[chip]);
     }
     private void initMapField(GridPane gridPane) {
         for (int i = 0; i < ROW_MAX; i++) {
