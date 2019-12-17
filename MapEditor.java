@@ -18,11 +18,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.stage.FileChooser;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Optional;
 
 public class MapEditor extends Application {
@@ -55,8 +50,8 @@ public class MapEditor extends Application {
         MenuItem endEdit = new MenuItem("終了");
         MenuItem allDelete = new MenuItem("全消去");
         makeNewFile.setOnAction(event -> newFile());
-        openFile.setOnAction(event -> openFile(stage));
-        saveFile.setOnAction(event -> saveFile(stage));
+        openFile.setOnAction(event -> openFile());
+        saveFile.setOnAction(event -> saveFile());
         endEdit.setOnAction(event -> endEdit(stage, event));
         allDelete.setOnAction(event -> fieldAllDelete());
         fileMenu.getItems().addAll(makeNewFile, openFile, saveFile, endEdit);
@@ -72,7 +67,7 @@ public class MapEditor extends Application {
         initPalette(palettePane);
         initButtons(buttonPane);
 
-        Label lblNowChip = new Label("現在のマップチップ");
+        Label lblNowChip = new Label("現在のマップチップ  ");
         lblNowChip.setFont(new Font(20));
         nowChip = new ImageView(mapChips[nowChipNumber]);
         HBox nowChipPane = new HBox();
@@ -147,10 +142,6 @@ public class MapEditor extends Application {
             mapChips[i] = new Image(url);
         }
     }
-    private void chipChange(int chip) {
-        nowChipNumber = chip;
-        nowChip.setImage(mapChips[chip]);
-    }
     private void initMapField(GridPane gridPane) {
         for (int i = 0; i < ROW_MAX; i++) {
             for (int j = 0; j < COLUMN_MAX; j++) {
@@ -160,6 +151,10 @@ public class MapEditor extends Application {
             }
         }
     }
+    private void chipChange(int chip) {
+        nowChipNumber = chip;
+        nowChip.setImage(mapChips[chip]);
+    }
     private void mouseOnAction(MouseEvent event) {
         int x = (int) event.getX();
         int y = (int) event.getY();
@@ -168,6 +163,7 @@ public class MapEditor extends Application {
         y = (y - 20) / 32;
         draw(x, y);
     }
+    
     private void draw(int x, int y) {
         try {
             mapField[x][y].setImage(mapChips[nowChipNumber]);
@@ -179,92 +175,20 @@ public class MapEditor extends Application {
             saveFlag = true;
         }
     }
-    private void newFile() {
-        if (saveFlag) {
-            Alert alert = new Alert(AlertType.CONFIRMATION);
-            alert.setTitle("マップエディタ");
-            alert.setHeaderText(null);
-            alert.setContentText("保存されていませんがファイルを新規作成しますか？");
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == ButtonType.OK) {
-                fieldAllDelete();
-            } else {
-                return;
-            }   
-        } else {
-            fieldAllDelete();
-        }
+    
+    private void newFile() {}
+
+    private void openFile() {
+        OpenFile of = new OpenFile();
+        of.openFile(mapField, mapChips);
     }
-    /* ファイルオープン用の処理 */
-    private void openFile(Stage stage) {
-        FileChooser fc = new FileChooser();
-        fc.setTitle("ファイル選択");
-        fc.setInitialDirectory(new File(System.getProperty("user.home")));
-        fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("map形式", "*.map"));
-        inputToFile(fc.showOpenDialog(null));
-    }
-    private void inputToFile(File file) {
-        try {
-            if (file != null) {
-                FileReader fileReader = new FileReader(file);
-                int data;
-                int row = 0;
-                int column = 0;
-                while ((data = fileReader.read()) != -1) {
-                    if (data == '\n') {
-                        column++;
-                        row = 0;
-                    } else {
-                        data = data & 0x0F;
-                        mapField[row][column].setImage(mapChips[data]);
-                        mapField[row][column].setFieldNumber(data);
-                        row++;                        
-                    }
-                }
-                fileReader.close();
-            }
-        } catch (IOException e) {
-            System.out.println(e);
-        }
-    }
-    /* ファイル保存用の処理 */
-    private void saveFile(Stage stage){
-        FileChooser fc = new FileChooser();
-        fc.setTitle("ファイル選択");
-        fc.setInitialDirectory(new File(System.getProperty("user.home")));
-        fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("map形式", "*.map"));
-        outputToFile(fc.showSaveDialog(null), mapInfoToString());
+
+    private void saveFile(){
+        SaveFile sv = new SaveFile();
+        sv.saveFile(mapField);
         saveFlag = false;
     }
-    private void outputToFile(File file, String str) {
-        try {
-            if (file != null) {
-                if (file.exists() == false) {
-                    file.createNewFile();
-                }
-                FileWriter fileWriter = new FileWriter(file);
-                fileWriter.write(str);
-                fileWriter.close();
-            } else {
-                return;
-            }
-        } catch (IOException e) {
-            System.out.println(e);
-        }
-    }
-    private String mapInfoToString() {
-    /* mapinfoの要素をStringに変換するメソッド */
-        String mapData = "";
-        StringBuilder buf = new StringBuilder();
-        for (int i = 0; i < COLUMN_MAX; i++) {
-            for (int j = 0; j < ROW_MAX; j++) {
-                buf.append(String.valueOf(mapField[j][i].getFieldNumber()));
-            }
-            buf.append("\n");
-        }
-        mapData = buf.toString();
-        return mapData;       
-    }
+
     private void endEdit(Stage stage, Event event) {
         if (saveFlag) {
             Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -281,6 +205,7 @@ public class MapEditor extends Application {
             Platform.exit();
         }
     }
+
     private void fieldAllDelete() {
         for (int i = 0; i < ROW_MAX; i++) {
             for (int j = 0; j < COLUMN_MAX; j++) {
