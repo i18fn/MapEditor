@@ -95,14 +95,14 @@ public class MapEditor extends Application {
     private void initButtons(GridPane buttonPane) {
         double width = 52;
         double height = width;
-        ButtonX btnSave = new ButtonX(width, height);
-        ButtonX btnUndo = new ButtonX(width, height);
-        ButtonX btnRedo = new ButtonX(width, height);
-        ButtonX btnChipSet = new ButtonX(width, height);
-        ButtonX btnFill = new ButtonX(width, height);
-        ButtonX btnLine = new ButtonX(width, height);
-        ButtonX btnRect = new ButtonX(width, height);
-        ButtonX btnRectFill = new ButtonX(width, height);
+        ButtonX btnSave = new ButtonX(width, height, "btnSave.bmp");
+        ButtonX btnUndo = new ButtonX(width, height, "btnUndo.bmp");
+        ButtonX btnRedo = new ButtonX(width, height, "btnRedo.bmp");
+        ButtonX btnChipSet = new ButtonX(width, height, "btnChipSet.bmp");
+        ButtonX btnFill = new ButtonX(width, height, "btnFill.bmp");
+        ButtonX btnLine = new ButtonX(width, height, "btnLine.bmp");
+        ButtonX btnRect = new ButtonX(width, height, "btnRect.bmp");
+        ButtonX btnRectFill = new ButtonX(width, height, "btnRectFill.bmp");
 
         buttonPane.add(btnSave, 0, 0);
         buttonPane.add(btnUndo, 1, 0);
