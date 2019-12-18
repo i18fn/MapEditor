@@ -5,9 +5,6 @@ import java.io.IOException;
 import javafx.scene.image.Image;
 
 public class OpenFile {
-
-    public OpenFile() {}
-
     public void openFile(MapChip[][] mapField, Image[] mapChips) {
         FileChooser fc = new FileChooser();
         fc.setTitle("ファイル選択");
@@ -15,7 +12,6 @@ public class OpenFile {
         fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("map形式", "*.map"));
         inputToFile(fc.showOpenDialog(null), mapField, mapChips);
     }
-
     private void inputToFile(File file, MapChip[][] mapField, Image[] mapChips) {
         try {
             if (file != null) {
@@ -42,6 +38,5 @@ public class OpenFile {
             System.out.println(e);
         }
     }
-
 }
 

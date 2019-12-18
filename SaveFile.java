@@ -4,9 +4,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class SaveFile {
-
-    public SaveFile() {}
-
     public void saveFile(MapChip[][] mapField){
         FileChooser fc = new FileChooser();
         fc.setTitle("ファイル選択");
@@ -14,7 +11,6 @@ public class SaveFile {
         fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("map形式", "*.map"));
         outputToFile(fc.showSaveDialog(null), mapInfoToString(mapField));
     }
-
     private void outputToFile(File file, String str) {
         try {
             if (file != null) {
@@ -31,7 +27,6 @@ public class SaveFile {
             System.out.println(e);
         }
     }
-
     private String mapInfoToString(MapChip[][] mapField) {
         String mapData = "";
         StringBuilder buf = new StringBuilder();
@@ -44,5 +39,4 @@ public class SaveFile {
         mapData = buf.toString();
         return mapData;       
     }
-
 }

@@ -38,23 +38,19 @@ public class MapEditor extends Application {
         stage.setTitle("マップエディタ");
         stage.setWidth(1698);
         stage.setHeight(1006);
-        // stage.setMaxWidth(1698);
-        // stage.setMaxHeight(1006);
 
         MenuBar menuBar = new MenuBar();
         Menu fileMenu = new Menu("ファイル");
         Menu editMenu = new Menu("編集");
-        MenuItem makeNewFile = new MenuItem("新規作成");
         MenuItem openFile = new MenuItem("開く");
         MenuItem saveFile = new MenuItem("保存");
         MenuItem endEdit = new MenuItem("終了");
         MenuItem allDelete = new MenuItem("全消去");
-        makeNewFile.setOnAction(event -> newFile());
         openFile.setOnAction(event -> openFile());
         saveFile.setOnAction(event -> saveFile());
         endEdit.setOnAction(event -> endEdit(stage, event));
         allDelete.setOnAction(event -> fieldAllDelete());
-        fileMenu.getItems().addAll(makeNewFile, openFile, saveFile, endEdit);
+        fileMenu.getItems().addAll(openFile, saveFile, endEdit);
         editMenu.getItems().addAll(allDelete);
         menuBar.getMenus().addAll(fileMenu, editMenu);
 
@@ -135,10 +131,6 @@ public class MapEditor extends Application {
             url = url + "\\" + String.valueOf(i) + ".bmp";
             palette[i] = new MapChip(new Image(url, size, size, true, false));
             palette[i].setOnMouseClicked(event -> chipChange(I));
-        }
-        for (int i = 0; i < mapChips.length; i++) {
-            url = "mapchip\\";
-            url = url + "\\" + String.valueOf(i) + ".bmp";
             mapChips[i] = new Image(url);
         }
     }
@@ -163,7 +155,6 @@ public class MapEditor extends Application {
         y = (y - 20) / 32;
         draw(x, y);
     }
-    
     private void draw(int x, int y) {
         try {
             mapField[x][y].setImage(mapChips[nowChipNumber]);
@@ -175,20 +166,15 @@ public class MapEditor extends Application {
             saveFlag = true;
         }
     }
-    
-    private void newFile() {}
-
     private void openFile() {
         OpenFile of = new OpenFile();
         of.openFile(mapField, mapChips);
     }
-
     private void saveFile(){
         SaveFile sv = new SaveFile();
         sv.saveFile(mapField);
         saveFlag = false;
     }
-
     private void endEdit(Stage stage, Event event) {
         if (saveFlag) {
             Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -205,7 +191,6 @@ public class MapEditor extends Application {
             Platform.exit();
         }
     }
-
     private void fieldAllDelete() {
         for (int i = 0; i < ROW_MAX; i++) {
             for (int j = 0; j < COLUMN_MAX; j++) {
