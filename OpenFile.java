@@ -1,6 +1,7 @@
 import javafx.stage.FileChooser;
 import java.io.File;
 import java.io.FileReader;
+import java.io.BufferedReader;
 import java.io.IOException;
 import javafx.scene.image.Image;
 
@@ -13,29 +14,33 @@ public class OpenFile {
         inputToFile(fc.showOpenDialog(null), mapField, mapChips);
     }
     private void inputToFile(File file, MapChip[][] mapField, Image[] mapChips) {
+        String data;
+        int[][] mapinfo;
         try {
-            if (file != null) {
-                FileReader fileReader = new FileReader(file);
-                char hex;
-                int row = 0;
-                int column = 0;
-                int data;
-                while ((data = fileReader.read()) != -1) {
-                    hex = (char)data;
-                    if (hex == '\n') {
-                        column++;
-                        row = 0;
-                    } else {
-                        data = Hex.HexToDeci(hex);
-                        mapField[row][column].setImage(mapChips[data]);
-                        mapField[row][column].setFieldNumber(data);
-                        row++;                        
-                    }
+            BufferedReader fRead;
+            fRead = new BufferedReader(new FileReader(file));
+            int mapWidth = Integer.parseInt(fRead.readLine());
+            int mapHeight = Integer.parseInt(fRead.readLine());
+            mapinfo = new int[mapWidth][mapHeight];
+            int i = 0;
+            while ((data = fRead.readLine()) != null) {
+                splitInt(data, mapinfo, i);
+                i++;
+            }
+            fRead.close();
+            for (int j = 0; j < mapinfo[0].length; j++) {
+                for (int k = 0; k < mapinfo.length; k++) {
+                    mapField[k][j].setImage(mapChips[mapinfo[k][j]]);
                 }
-                fileReader.close();
             }
         } catch (IOException e) {
             System.out.println(e);
+        }
+    }
+    private static void splitInt(String strIndex, int[][] intIndex, int row) {
+        String[] str = strIndex.split("");
+        for (int i = 0; i < str.length; i++) {
+            intIndex[i][row] = Hex.HexToDeci(str[i].charAt(0));
         }
     }
 }

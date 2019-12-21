@@ -199,6 +199,7 @@ public class MapEditor extends Application {
             }
         }
     }
+    public void fieldHiding() {}
     public static void main(String[] args) {
         launch(args);
     }
