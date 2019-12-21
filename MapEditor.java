@@ -22,7 +22,7 @@ import java.util.Optional;
 
 public class MapEditor extends Application {
     private boolean saveFlag = false;
-    /* マップフィールドの幅と高さの最大値 */
+    /* マップフィールドの幅と高さの最大値と初期値 */
     private final int ROW_MAX = 46;
     private final int COLUMN_MAX = 29;
     /* 配置するマップチップの二次元配列 */
@@ -33,7 +33,14 @@ public class MapEditor extends Application {
     /* 現在の配置するマップチップの情報 */
     private int nowChipNumber = 1;
     private ImageView nowChip;
-    @Override
+
+    class EditorInfo {
+        int nowRow = 46;
+        int nowColumn = 29;
+        int[][] fieldInfo = new int[nowRow][nowColumn];
+    }
+    private EditorInfo editorInfo = new EditorInfo();
+
     public void start(Stage stage) throws Exception {
         stage.setTitle("マップエディタ");
         stage.setWidth(1698);
@@ -42,15 +49,17 @@ public class MapEditor extends Application {
         MenuBar menuBar = new MenuBar();
         Menu fileMenu = new Menu("ファイル");
         Menu editMenu = new Menu("編集");
+        MenuItem newFile = new MenuItem("新規作成");
         MenuItem openFile = new MenuItem("開く");
         MenuItem saveFile = new MenuItem("保存");
         MenuItem endEdit = new MenuItem("終了");
         MenuItem allDelete = new MenuItem("全消去");
+        newFile.setOnAction(event -> makeNewFile());
         openFile.setOnAction(event -> openFile());
         saveFile.setOnAction(event -> saveFile());
         endEdit.setOnAction(event -> endEdit(stage, event));
         allDelete.setOnAction(event -> fieldAllDelete());
-        fileMenu.getItems().addAll(openFile, saveFile, endEdit);
+        fileMenu.getItems().addAll(newFile, openFile, saveFile, endEdit);
         editMenu.getItems().addAll(allDelete);
         menuBar.getMenus().addAll(fileMenu, editMenu);
 
@@ -112,6 +121,8 @@ public class MapEditor extends Application {
         buttonPane.add(btnLine, 1, 1);
         buttonPane.add(btnRect, 2, 1);
         buttonPane.add(btnRectFill, 3, 1);
+
+        btnSave.setOnAction(event -> saveFile());
     }
     private void initPalette(GridPane palettePane) {
         int a = 0;
@@ -156,6 +167,7 @@ public class MapEditor extends Application {
         draw(x, y);
     }
     private void draw(int x, int y) {
+        if (x > editorInfo.nowRow || y > editorInfo.nowColumn) return;
         try {
             mapField[x][y].setImage(mapChips[nowChipNumber]);
             mapField[x][y].setFieldNumber(nowChipNumber);
@@ -165,6 +177,11 @@ public class MapEditor extends Application {
         if (saveFlag == false) {
             saveFlag = true;
         }
+    }
+    private void makeNewFile() {
+        editorInfo.nowRow = 40;
+        editorInfo.nowColumn = 20;
+        fieldHiding();
     }
     private void openFile() {
         OpenFile of = new OpenFile();
@@ -199,7 +216,15 @@ public class MapEditor extends Application {
             }
         }
     }
-    public void fieldHiding() {}
+    private void fieldHiding() {
+        for (int i = 0; i < ROW_MAX; i++) {
+            for (int j = 0; j < COLUMN_MAX; j++) {
+                if (i > editorInfo.nowRow || j > editorInfo.nowColumn) {
+                    mapField[i][j].setImage(null);
+                }
+            }
+        }
+    }
     public static void main(String[] args) {
         launch(args);
     }
