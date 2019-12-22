@@ -11,8 +11,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -22,24 +20,7 @@ import java.util.Optional;
 
 public class MapEditor extends Application {
     private boolean saveFlag = false;
-    /* マップフィールドの幅と高さの最大値と初期値 */
-    private final int ROW_MAX = 46;
-    private final int COLUMN_MAX = 29;
-    /* 配置するマップチップの二次元配列 */
-    private MapChip[][] mapField = new MapChip[ROW_MAX][COLUMN_MAX];
-    /* パレット(マップチップ)の情報 */
-    private Image[] mapChips = new Image[16];
-    private ImageView[] palette = new ImageView[16];
-    /* 現在の配置するマップチップの情報 */
-    private int nowChipNumber = 1;
-    private ImageView nowChip;
-
-    class EditorInfo {
-        int nowRow = 46;
-        int nowColumn = 29;
-        int[][] fieldInfo = new int[nowRow][nowColumn];
-    }
-    private EditorInfo editorInfo = new EditorInfo();
+    private EditorInfo editorInfo = new EditorInfo(1);
 
     public void start(Stage stage) throws Exception {
         stage.setTitle("マップエディタ");
@@ -63,20 +44,17 @@ public class MapEditor extends Application {
         editMenu.getItems().addAll(allDelete);
         menuBar.getMenus().addAll(fileMenu, editMenu);
 
-        GridPane gridPane = new GridPane();
+        GridPane fieldPane = new GridPane();
         GridPane palettePane = new GridPane();
         GridPane buttonPane = new GridPane();
 
-        initMapChips();
-        initMapField(gridPane);
-        initPalette(palettePane);
+        editorInfo.init(palettePane, fieldPane);
         initButtons(buttonPane);
 
         Label lblNowChip = new Label("現在のマップチップ  ");
         lblNowChip.setFont(new Font(20));
-        nowChip = new ImageView(mapChips[nowChipNumber]);
         HBox nowChipPane = new HBox();
-        nowChipPane.getChildren().addAll(lblNowChip, nowChip);
+        nowChipPane.getChildren().addAll(lblNowChip, editorInfo.nowChip);
 
         Label lblLog = new Label("ログ");
         lblLog.setFont(new Font(20));
@@ -92,7 +70,7 @@ public class MapEditor extends Application {
         VBox root = new VBox();
         vBox.getChildren().addAll(lblMapChip, palettePane, nowChipPane, buttonPane, lblLog, logArea);
         vBox.setSpacing(5.0);
-        hBox.getChildren().addAll(gridPane, vBox);
+        hBox.getChildren().addAll(fieldPane, vBox);
         root.getChildren().addAll(menuBar, hBox);
         Scene scene = new Scene(root);
         scene.setOnMouseClicked(event -> mouseOnAction(event));
@@ -124,40 +102,6 @@ public class MapEditor extends Application {
 
         btnSave.setOnAction(event -> saveFile());
     }
-    private void initPalette(GridPane palettePane) {
-        int a = 0;
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                palettePane.add(palette[a], j, i);
-                a++;
-            }
-        }
-    }
-    private void initMapChips() {
-        int size = 52;
-        String url;
-        for (int i = 0; i < palette.length; i++) {
-            final int I = i;
-            url = "mapchip\\";
-            url = url + "\\" + String.valueOf(i) + ".bmp";
-            palette[i] = new MapChip(new Image(url, size, size, true, false));
-            palette[i].setOnMouseClicked(event -> chipChange(I));
-            mapChips[i] = new Image(url);
-        }
-    }
-    private void initMapField(GridPane gridPane) {
-        for (int i = 0; i < ROW_MAX; i++) {
-            for (int j = 0; j < COLUMN_MAX; j++) {
-                mapField[i][j] = new MapChip(mapChips[0], 0);
-                GridPane.setConstraints(mapField[i][j], i, j);
-                gridPane.getChildren().addAll(mapField[i][j]);
-            }
-        }
-    }
-    private void chipChange(int chip) {
-        nowChipNumber = chip;
-        nowChip.setImage(mapChips[chip]);
-    }
     private void mouseOnAction(MouseEvent event) {
         int x = (int) event.getX();
         int y = (int) event.getY();
@@ -167,30 +111,27 @@ public class MapEditor extends Application {
         draw(x, y);
     }
     private void draw(int x, int y) {
-        if (x > editorInfo.nowRow || y > editorInfo.nowColumn) return;
-        try {
-            mapField[x][y].setImage(mapChips[nowChipNumber]);
-            mapField[x][y].setFieldNumber(nowChipNumber);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return;
-        }
-        if (saveFlag == false) {
+        int errorflag = editorInfo.draw(x, y);
+        if (errorflag == -1 && saveFlag == false) {
             saveFlag = true;
         }
     }
     private void makeNewFile() {
-        editorInfo.nowRow = 40;
-        editorInfo.nowColumn = 20;
-        fieldHiding();
+        editorInfo.row = 40;
+        editorInfo.column = 20;
+        editorInfo.fieldHiding();
     }
     private void openFile() {
         OpenFile of = new OpenFile();
-        of.openFile(mapField, mapChips);
+        of.openFile(editorInfo.mapField, editorInfo.mapChips);
     }
     private void saveFile(){
         SaveFile sv = new SaveFile();
-        sv.saveFile(mapField);
+        sv.saveFile(editorInfo.mapField);
         saveFlag = false;
+    }
+    private void fieldAllDelete() {
+        editorInfo.fieldAllDelete();
     }
     private void endEdit(Stage stage, Event event) {
         if (saveFlag) {
@@ -206,23 +147,6 @@ public class MapEditor extends Application {
             }
         } else {
             Platform.exit();
-        }
-    }
-    private void fieldAllDelete() {
-        for (int i = 0; i < ROW_MAX; i++) {
-            for (int j = 0; j < COLUMN_MAX; j++) {
-                mapField[i][j].setImage(mapChips[0]);
-                mapField[i][j].setFieldNumber(0);
-            }
-        }
-    }
-    private void fieldHiding() {
-        for (int i = 0; i < ROW_MAX; i++) {
-            for (int j = 0; j < COLUMN_MAX; j++) {
-                if (i > editorInfo.nowRow || j > editorInfo.nowColumn) {
-                    mapField[i][j].setImage(null);
-                }
-            }
         }
     }
     public static void main(String[] args) {
