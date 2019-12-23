@@ -74,7 +74,7 @@ class EditorInfo {
     private void fieldHiding() {
         for (int i = 0; i < ROW_MAX; i++) {
             for (int j = 0; j < COLUMN_MAX; j++) {
-                if (i > row || j > column) {
+                if (i >= row || j >= column) {
                     mapField[i][j].setImage(null);
                 } else {
                     mapField[i][j].setImage(mapChips[0]);

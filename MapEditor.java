@@ -42,7 +42,7 @@ public class MapEditor extends Application {
         MenuItem allDelete = new MenuItem("全消去");
         newFile.setOnAction(event -> makeNewFile());
         openFile.setOnAction(event -> openFile());
-        saveFile.setOnAction(event -> saveFile());
+        saveFile.setOnAction(event -> saveFile(stage));
         endEdit.setOnAction(event -> endEdit(stage, event));
         allDelete.setOnAction(event -> fieldAllDelete());
         fileMenu.getItems().addAll(newFile, openFile, saveFile, endEdit);
@@ -54,7 +54,7 @@ public class MapEditor extends Application {
         GridPane buttonPane = new GridPane();
 
         editorInfo.init(palettePane, fieldPane);
-        initButtons(buttonPane);
+        initButtons(buttonPane, stage);
 
         Label lblNowChip = new Label("現在のマップチップ  ");
         lblNowChip.setFont(new Font(20));
@@ -84,7 +84,7 @@ public class MapEditor extends Application {
         stage.setScene(scene);
         stage.show();
     }
-    private void initButtons(GridPane buttonPane) {
+    private void initButtons(GridPane buttonPane, Stage stage) {
         double width = 52;
         double height = width;
         ButtonX btnSave = new ButtonX(width, height, "btnSave.png");
@@ -105,7 +105,7 @@ public class MapEditor extends Application {
         buttonPane.add(btnRect, 2, 1);
         buttonPane.add(btnRectFill, 3, 1);
 
-        btnSave.setOnAction(event -> saveFile());
+        btnSave.setOnAction(event -> saveFile(stage));
     }
     private void mouseOnAction(MouseEvent event) {
         int x = (int) event.getX();
@@ -171,9 +171,9 @@ public class MapEditor extends Application {
         OpenFile of = new OpenFile();
         of.openFile(editorInfo.mapField, editorInfo.mapChips);
     }
-    private void saveFile(){
+    private void saveFile(Stage stage){
         SaveFile sv = new SaveFile();
-        sv.saveFile(editorInfo.mapField);
+        sv.saveFile(stage, editorInfo);
         saveFlag = false;
     }
     private void fieldAllDelete() {
