@@ -1,13 +1,18 @@
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.Event;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Alert.AlertType;
@@ -117,9 +122,50 @@ public class MapEditor extends Application {
         }
     }
     private void makeNewFile() {
-        editorInfo.row = 40;
-        editorInfo.column = 20;
-        editorInfo.fieldHiding();
+        askSizeStageShow();
+    }
+    private void askSizeStageShow() {
+        Stage askSizeStage = new Stage();
+        Label lblWidth = new Label(" 　幅");
+        Label lblHeight = new Label("　高さ");
+        Label lblAsk = new Label("作成するマップの大きさ");
+        lblWidth.setMinWidth(50);
+        lblHeight.setMinWidth(50);
+        lblAsk.setPadding(new Insets(5.0, 5.0, 5.0, 5.0));
+        Spinner<Integer> spinnerWidth = new Spinner<>();
+        Spinner<Integer> spinnerHeight = new Spinner<>();
+        spinnerWidth.setEditable(true);
+        spinnerHeight.setEditable(true);
+        spinnerWidth.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, editorInfo.ROW_MAX, editorInfo.ROW_MAX));
+        spinnerHeight.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, editorInfo.COLUMN_MAX, editorInfo.COLUMN_MAX));
+        spinnerWidth.setMaxWidth(120);
+        spinnerHeight.setMaxWidth(120);
+        spinnerWidth.setMaxHeight(40);
+        spinnerHeight.setMaxHeight(40);
+        Button btnOK = new Button("OK");
+        Button btnCancel = new Button("キャンセル");
+        btnOK.setMinWidth(40);
+        btnCancel.setMinWidth(40);
+        btnOK.setOnAction(event -> setSize(askSizeStage, spinnerWidth.getValue(), spinnerHeight.getValue()));
+        btnCancel.setOnAction(event -> askSizeStage.close());
+        HBox btnHBox = new HBox();
+        HBox widthHBox = new HBox();
+        HBox heightHBox = new HBox();
+        btnHBox.getChildren().addAll(btnOK, btnCancel);
+        widthHBox.getChildren().addAll(lblWidth, spinnerWidth);
+        widthHBox.setAlignment(Pos.CENTER);
+        heightHBox.getChildren().addAll(lblHeight, spinnerHeight);
+        heightHBox.setAlignment(Pos.CENTER);
+        VBox root = new VBox();
+        root.getChildren().addAll(lblAsk, widthHBox, heightHBox, btnHBox);
+
+        askSizeStage.setScene(new Scene(root));
+        askSizeStage.show();        
+    }
+    private void setSize(Stage stage, int width, int height) {
+        fieldAllDelete();
+        editorInfo.sizeChange(width, height);
+        stage.close();
     }
     private void openFile() {
         OpenFile of = new OpenFile();
