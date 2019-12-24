@@ -83,7 +83,7 @@ class EditorInfo {
         }
     }
     int draw(int x, int y) {
-        if (x > row || y > column) return -1;
+        if (x >= row || y >= column) return -1;
         try {
             mapField[x][y].setImage(mapChips[nowChipNumber]);
             mapField[x][y].setFieldNumber(nowChipNumber);

@@ -41,7 +41,7 @@ public class MapEditor extends Application {
         MenuItem endEdit = new MenuItem("終了");
         MenuItem allDelete = new MenuItem("全消去");
         newFile.setOnAction(event -> makeNewFile());
-        openFile.setOnAction(event -> openFile());
+        openFile.setOnAction(event -> openFile(stage));
         saveFile.setOnAction(event -> saveFile(stage));
         endEdit.setOnAction(event -> endEdit(stage, event));
         allDelete.setOnAction(event -> fieldAllDelete());
@@ -167,9 +167,9 @@ public class MapEditor extends Application {
         editorInfo.sizeChange(width, height);
         stage.close();
     }
-    private void openFile() {
+    private void openFile(Stage stage) {
         OpenFile of = new OpenFile();
-        of.openFile(editorInfo.mapField, editorInfo.mapChips);
+        of.openFile(stage, editorInfo);
     }
     private void saveFile(Stage stage){
         SaveFile sv = new SaveFile();

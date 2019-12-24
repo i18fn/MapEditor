@@ -1,19 +1,23 @@
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import java.io.File;
 import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.IOException;
-import javafx.scene.image.Image;
 
 public class OpenFile {
-    public void openFile(MapChip[][] mapField, Image[] mapChips) {
+    public void openFile(Stage stage, EditorInfo editorInfo) {
         FileChooser fc = new FileChooser();
         fc.setTitle("ファイル選択");
         fc.setInitialDirectory(new File(System.getProperty("user.home")));
         fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("map形式", "*.map"));
-        inputToFile(fc.showOpenDialog(null), mapField, mapChips);
+        try {
+            inputToFile(fc.showOpenDialog(stage), editorInfo);
+        } catch(NullPointerException e) {
+            System.out.println("ファイルを指定しなかった。");
+        }
     }
-    private void inputToFile(File file, MapChip[][] mapField, Image[] mapChips) {
+    private void inputToFile(File file, EditorInfo editorInfo) {
         String data;
         int[][] mapinfo;
         try {
@@ -21,6 +25,7 @@ public class OpenFile {
             fRead = new BufferedReader(new FileReader(file));
             int mapWidth = Integer.parseInt(fRead.readLine());
             int mapHeight = Integer.parseInt(fRead.readLine());
+            editorInfo.sizeChange(mapWidth, mapHeight);
             mapinfo = new int[mapWidth][mapHeight];
             int i = 0;
             while ((data = fRead.readLine()) != null) {
@@ -28,11 +33,12 @@ public class OpenFile {
                 i++;
             }
             fRead.close();
-            for (int j = 0; j < mapinfo[0].length; j++) {
-                for (int k = 0; k < mapinfo.length; k++) {
-                    mapField[k][j].setImage(mapChips[mapinfo[k][j]]);
+            for (int j = 0; j < mapHeight; j++) {
+                for (int k = 0; k < mapWidth; k++) {
+                    editorInfo.mapField[k][j].setImage(editorInfo.mapChips[mapinfo[k][j]]);
                 }
             }
+
         } catch (IOException e) {
             System.out.println(e);
         }
