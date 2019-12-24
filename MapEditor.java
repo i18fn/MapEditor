@@ -87,7 +87,7 @@ public class MapEditor extends Application {
     private void initButtons(GridPane buttonPane, Stage stage) {
         double width = 52;
         double height = width;
-        ButtonX btnSave = new ButtonX(width, height, "btnSave.png");
+        ButtonX btnSave = new ButtonX(width, height, "btnSave.png"); //実装済み
         ButtonX btnUndo = new ButtonX(width, height, "btnUndo.png");
         ButtonX btnRedo = new ButtonX(width, height, "btnRedo.png");
         ButtonX btnChipSet = new ButtonX(width, height, "btnChipSet.png");

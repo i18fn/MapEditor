@@ -20,7 +20,6 @@ public class ButtonX extends Button {
             setGraphic(new ImageView(new Image(getClass().getResourceAsStream(imageUrl))));
         } catch (Exception e) {
             System.out.println(e);
-        }
-        
+        }      
     }
 } 

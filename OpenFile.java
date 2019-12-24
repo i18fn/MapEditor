@@ -43,11 +43,10 @@ public class OpenFile {
             System.out.println(e);
         }
     }
-    private static void splitInt(String strIndex, int[][] intIndex, int row) {
+    private void splitInt(String strIndex, int[][] intIndex, int row) {
         String[] str = strIndex.split("");
         for (int i = 0; i < str.length; i++) {
             intIndex[i][row] = Hex.HexToDeci(str[i].charAt(0));
         }
     }
 }
-
