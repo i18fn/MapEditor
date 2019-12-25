@@ -106,6 +106,8 @@ public class MapEditor extends Application {
         buttonPane.add(btnRectFill, 3, 1);
 
         btnSave.setOnAction(event -> saveFile(stage));
+        btnUndo.setOnAction(event -> editorInfo.undo());
+        btnRedo.setOnAction(event -> editorInfo.redo());
     }
     private void mouseOnAction(MouseEvent event) {
         int x = (int) event.getX();

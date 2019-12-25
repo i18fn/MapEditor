@@ -1,6 +1,9 @@
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.image.Image;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.NoSuchElementException;
 
 class EditorInfo {
     final int ROW_MAX = 46;
@@ -14,6 +17,8 @@ class EditorInfo {
     Image[] mapChips = new Image[16];
     ImageView[] palette = new ImageView[16];
     ImageView nowChip = new ImageView(mapChips[1]);
+    private Deque<iCommand> undoStack = new ArrayDeque<>();
+    private Deque<iCommand> redoStack = new ArrayDeque<>();
 
     EditorInfo(int nowChipNumber) {
         this.nowChipNumber = nowChipNumber;
@@ -91,5 +96,19 @@ class EditorInfo {
         } catch (ArrayIndexOutOfBoundsException e) {
             return -1;
         }
+    }
+    void undo() {
+        try {
+            undoStack.pop().undo();
+        } catch (NoSuchElementException e) {
+            return;
+        }       
+    }
+    void redo() {
+        try {
+            undoStack.pop().redo();
+        } catch (NoSuchElementException e) {
+            return;
+        }     
     }
 }
