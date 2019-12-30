@@ -1,3 +1,5 @@
+package editorlib;
+
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -15,7 +17,7 @@ public class ButtonX extends Button {
         super();
         setPrefWidth(width);
         setPrefHeight(height);
-        imageUrl = "ButtonIcon//" + imageUrl;
+        imageUrl = "..//ButtonIcon//" + imageUrl;
         try {
             setGraphic(new ImageView(new Image(getClass().getResourceAsStream(imageUrl))));
         } catch (Exception e) {
