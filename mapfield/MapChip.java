@@ -12,7 +12,7 @@ public class MapChip extends ImageView {
         super(image);
         this.chipNumber = chipNumber;
     }
-    int getFieldNumber() {
+    public int getFieldNumber() {
         return this.chipNumber;
     }    
 }

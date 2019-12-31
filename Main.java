@@ -132,6 +132,8 @@ public class Main extends Application {
         of.openFile(canvas);
     }
     public void saveFile() {
+        SaveFile sf = new SaveFile();
+        sf.saveFile(canvas);
     }
     public static void main(String[] args) {
         launch(args);
