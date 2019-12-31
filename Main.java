@@ -1,5 +1,6 @@
 import mapfield.*;
 import palette.*;
+import filecommand.*;
 import editorlib.*;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -33,8 +34,8 @@ public class Main extends Application {
         MenuItem endEdit = new MenuItem("終了");
         MenuItem allDelete = new MenuItem("全消去");
         // newFile.setOnAction(event -> makeNewFile());
-        // openFile.setOnAction(event -> openFile());
-        // saveFile.setOnAction(event -> saveFile());
+        openFile.setOnAction(event -> openFile());
+        saveFile.setOnAction(event -> saveFile());
         // endEdit.setOnAction(event -> endEdit());
         // allDelete.setOnAction(event -> fieldAllDelete());
         fileMenu.getItems().addAll(newFile, openFile, saveFile, endEdit);
@@ -123,6 +124,14 @@ public class Main extends Application {
         buttonPane.add(btnLine, 1, 1);
         buttonPane.add(btnRect, 2, 1);
         buttonPane.add(btnRectFill, 3, 1);
+
+        btnSave.setOnAction(event -> saveFile());
+    }
+    public void openFile() {
+        OpenFile of = new OpenFile();
+        of.openFile(canvas);
+    }
+    public void saveFile() {
     }
     public static void main(String[] args) {
         launch(args);

@@ -5,12 +5,12 @@
 // import java.io.IOException;
 
 // public class SaveFile {
-//     public void saveFile(Stage stage, EditorInfo editorInfo) {
+//     public void saveFile(EditorInfo editorInfo) {
 //         FileChooser fc = new FileChooser();
 //         fc.setTitle("ファイル選択");
 //         fc.setInitialDirectory(new File(System.getProperty("user.home")));
 //         fc.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("map形式", "*.map"));
-//         outputToFile(fc.showSaveDialog(stage), mapInfoToString(editorInfo.mapField, editorInfo.row, editorInfo.column), editorInfo); 
+//         outputToFile(fc.showSaveDialog(), mapInfoToString(editorInfo.mapField, editorInfo.row, editorInfo.column), editorInfo); 
 //     }
 //     private void outputToFile(File file, String str, EditorInfo editorInfo) {
 //         try {
