@@ -1,13 +1,23 @@
 package command;
 
 import mapfield.*;
-import javafx.event.Event;
-import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 
 public class DrawCommand implements Command {
-    public DrawCommand(Canvas canvas, Event event, Image image) {
+    private Canvas canvas;
+    private int x;
+    private int y;
+    public DrawCommand(Canvas canvas, MouseEvent event){
+        this.canvas = canvas;
+        x = (int)event.getX() / 32;
+        y = (int)event.getY() / 32;
     }
     public void execute() {
-
+        if (x >= canvas.getWidth()| y >= canvas.getHeight()) return;
+        try {
+            canvas.setChip(x, y);;
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return;
+        }
     }
 }

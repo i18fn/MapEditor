@@ -169,15 +169,6 @@
 //         editorInfo.sizeChange(width, height);
 //         stage.close();
 //     }
-//     private void openFile(Stage stage) {
-//         OpenFile of = new OpenFile();
-//         of.openFile(stage, editorInfo);
-//     }
-//     private void saveFile(Stage stage){
-//         SaveFile sv = new SaveFile();
-//         sv.saveFile(stage, editorInfo);
-//         saveFlag = false;
-//     }
 //     private void fieldAllDelete() {
 //         editorInfo.fieldAllDelete();
 //     }

@@ -14,5 +14,8 @@ public class MapChip extends ImageView {
     }
     public int getFieldNumber() {
         return this.chipNumber;
+    }
+    public void setFieldNumber(int chipNumber) {
+        this.chipNumber = chipNumber;
     }    
 }

@@ -1,6 +1,7 @@
 import mapfield.*;
 import palette.*;
 import filecommand.*;
+import command.*;
 import editorlib.*;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -11,6 +12,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.layout.GridPane;
@@ -19,7 +21,6 @@ import javafx.scene.layout.HBox;
 public class Main extends Application {
     Canvas canvas = new Canvas();
     Palette palette = Palette.getPalette();
-    ImageView nowChip;
     public void start(Stage stage) throws Exception {
         stage.setTitle("マップエディタ");
         stage.setWidth(1698);
@@ -53,7 +54,7 @@ public class Main extends Application {
         Label lblNowChip = new Label("現在のマップチップ  ");
         lblNowChip.setFont(new Font(20));
         HBox nowChipPane = new HBox();
-        nowChip = new ImageView(palette.getNowImage()); 
+        ImageView nowChip = new ImageView(palette.getNowImage()); 
         nowChipPane.getChildren().addAll(lblNowChip, nowChip);
 
         Label lblLog = new Label("ログ");
@@ -101,6 +102,8 @@ public class Main extends Application {
                 canvas.mapField[i][j] = new MapChip(palette.getImage(0), 0);
                 GridPane.setConstraints(canvas.mapField[i][j], i, j);
                 canvasPane.getChildren().addAll(canvas.mapField[i][j]);
+                canvasPane.setOnMouseClicked(event -> draw(event));
+                canvasPane.setOnMouseDragged(event -> draw(event));
             }
         }
     }
@@ -126,6 +129,10 @@ public class Main extends Application {
         buttonPane.add(btnRectFill, 3, 1);
 
         btnSave.setOnAction(event -> saveFile());
+    }
+    public void draw(MouseEvent event) {
+        DrawCommand cmd = new DrawCommand(canvas, event);
+        cmd.execute();
     }
     public void openFile() {
         OpenFile of = new OpenFile();
