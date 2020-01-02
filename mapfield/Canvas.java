@@ -10,10 +10,10 @@ public class Canvas {
     private int height = HEIGHT_MAX;
     public MapChip[][] mapField = new MapChip[WIDTH_MAX][HEIGHT_MAX];
     public int getWidth() {
-        return width;
+        return this.width;
     }
     public int getHeight() {
-        return height;
+        return this.height;
     }
     public void sizeChange(int width, int height) {
         this.width = width;
