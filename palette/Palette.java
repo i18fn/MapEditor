@@ -35,6 +35,9 @@ public class Palette {
     public int getNowChipNumber() {
         return nowChipNumber;
     }
+    public void setImage(int chipNumber) {
+        this.nowChip = mapChips[chipNumber];
+    }
     public Image getNowImage() {
         return nowChip;
     }

@@ -34,8 +34,10 @@ public class Canvas {
     public void setChip(int x, int y) {
         setChip(palette.getNowChipNumber(), x, y);
     }
-    public void setChip(int chipNumber, int x, int y) {
+    public void setChip(int chipNumber, int x, int y) { 
+        palette.setImage(chipNumber);
         mapField[x][y].setImage(palette.getMapChips(chipNumber));
         mapField[x][y].setFieldNumber(chipNumber);
+
     }
 }
