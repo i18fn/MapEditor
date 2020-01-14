@@ -5,7 +5,7 @@ import palette.*;
 public class Canvas {
     private Palette palette = Palette.getPalette();
     public final int WIDTH_MAX = 46;
-    public final int HEIGHT_MAX = 29;
+    public final int HEIGHT_MAX = 28;
     private int width = WIDTH_MAX;
     private int height = HEIGHT_MAX;
     public MapChip[][] mapField = new MapChip[WIDTH_MAX][HEIGHT_MAX];

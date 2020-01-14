@@ -4,27 +4,37 @@ import filecommand.*;
 import command.*;
 import editorlib.*;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
+import javafx.event.Event;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Label;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import java.util.Optional;
 
 public class Main extends Application {
-    Canvas canvas = new Canvas();
-    Palette palette = Palette.getPalette();
+    private boolean saveFlag;
+    private Canvas canvas;
+    private Palette palette;
     public void start(Stage stage) throws Exception {
+        saveFlag = false;
+        canvas = new Canvas();
+        palette = Palette.getPalette();
         stage.setTitle("マップエディタ");
         stage.setWidth(1698);
-        stage.setHeight(1006);
+        stage.setHeight(1024);
 
         MenuBar menuBar = new MenuBar();
         Menu fileMenu = new Menu("ファイル");
@@ -37,7 +47,7 @@ public class Main extends Application {
         // newFile.setOnAction(event -> makeNewFile());
         openFile.setOnAction(event -> openFile());
         saveFile.setOnAction(event -> saveFile());
-        // endEdit.setOnAction(event -> endEdit());
+        endEdit.setOnAction(event -> endEdit(stage, event));
         // allDelete.setOnAction(event -> fieldAllDelete());
         fileMenu.getItems().addAll(newFile, openFile, saveFile, endEdit);
         editMenu.getItems().addAll(allDelete);
@@ -47,9 +57,11 @@ public class Main extends Application {
         GridPane canvasPane = new GridPane();
         GridPane buttonPane = new GridPane();
 
+        ButtonBar buttonBar = new ButtonBar();
+        buttonBar.setMinSize(50, 50);
         initPalette(palettePane);
         initCanvas(canvasPane);
-        initButtons(buttonPane, stage);
+        initButtons(buttonBar, stage);
 
         Label lblNowChip = new Label("現在のマップチップ  ");
         lblNowChip.setFont(new Font(20));
@@ -57,26 +69,17 @@ public class Main extends Application {
         ImageView nowChip = new ImageView(palette.getNowImage()); 
         nowChipPane.getChildren().addAll(lblNowChip, nowChip);
 
-        Label lblLog = new Label("ログ");
-        lblLog.setFont(new Font(20));
-        TextArea logArea = new TextArea();
-        logArea.setWrapText(true);
-        logArea.setPrefHeight(490);
-        logArea.setEditable(false);
-
         Label lblMapChip = new Label("マップチップ");
         lblMapChip.setFont(new Font(25));
         HBox hBox = new HBox();
         VBox vBox = new VBox();
         VBox root = new VBox();
-        vBox.getChildren().addAll(lblMapChip, palettePane, nowChipPane, buttonPane, lblLog, logArea);
+        vBox.getChildren().addAll(lblMapChip, palettePane, nowChipPane, buttonPane);
         vBox.setSpacing(5.0);
         hBox.getChildren().addAll(canvasPane, vBox);
-        root.getChildren().addAll(menuBar, hBox);
+        root.getChildren().addAll(menuBar, buttonBar, hBox);
         Scene scene = new Scene(root);
-        // scene.setOnMouseClicked(event -> mouseOnAction(event));
-        // scene.setOnMouseDragged(event -> mouseOnAction(event));
-        // stage.setOnCloseRequest(event -> endEdit(stage, event));
+        stage.setOnCloseRequest(event -> endEdit(stage, event));
         stage.setScene(scene);
         stage.show();
     }
@@ -107,32 +110,17 @@ public class Main extends Application {
             }
         }
     }
-    private void initButtons(GridPane buttonPane, Stage stage) {
-        double width = 52;
-        double height = width;
-        ButtonX btnSave = new ButtonX(width, height, "btnSave.png"); //実装済み
-        ButtonX btnUndo = new ButtonX(width, height, "btnUndo.png");
-        ButtonX btnRedo = new ButtonX(width, height, "btnRedo.png");
-        ButtonX btnChipSet = new ButtonX(width, height, "btnChipSet.png");
-        ButtonX btnFill = new ButtonX(width, height, "btnFill.png");
-        ButtonX btnLine = new ButtonX(width, height, "btnLine.png");
-        ButtonX btnRect = new ButtonX(width, height, "btnRect.png");
-        ButtonX btnRectFill = new ButtonX(width, height, "btnRectFill.png");
-
-        buttonPane.add(btnSave, 0, 0);
-        buttonPane.add(btnUndo, 1, 0);
-        buttonPane.add(btnRedo, 2, 0);
-        buttonPane.add(btnChipSet, 3, 0);
-        buttonPane.add(btnFill, 0, 1);
-        buttonPane.add(btnLine, 1, 1);
-        buttonPane.add(btnRect, 2, 1);
-        buttonPane.add(btnRectFill, 3, 1);
-
+    private void initButtons(ButtonBar buttonBar, Stage stage) {
+        ButtonX btnSave = new ButtonX(32, 32, "btnSave.png");
+        ButtonX btnUndo = new ButtonX(32, 32, "btnUndo.png");
+        ButtonX btnRedo = new ButtonX(32, 32, "btnRedo.png");
         btnSave.setOnAction(event -> saveFile());
+        buttonBar.getButtons().addAll(btnSave, btnUndo, btnRedo);
     }
     public void draw(MouseEvent event) {
         DrawCommand cmd = new DrawCommand(canvas, event);
         cmd.execute();
+        saveFlag = cmd.getFlag();
     }
     public void openFile() {
         OpenFile of = new OpenFile();
@@ -141,6 +129,22 @@ public class Main extends Application {
     public void saveFile() {
         SaveFile sf = new SaveFile();
         sf.saveFile(canvas);
+    }
+    private void endEdit(Stage stage, Event event) {
+        if (saveFlag) {
+            Alert alert = new Alert(AlertType.CONFIRMATION);
+            alert.setTitle("マップエディタ");
+            alert.setHeaderText(null);
+            alert.setContentText("保存されていませんが終了しますか？");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                Platform.exit();
+            } else {
+                event.consume();
+            }
+        } else {
+            Platform.exit();
+        }
     }
     public static void main(String[] args) {
         launch(args);
