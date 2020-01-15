@@ -8,6 +8,7 @@ import javafx.application.Platform;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.event.Event;
+import javafx.event.EventType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -26,12 +27,18 @@ import java.util.Optional;
 
 public class Main extends Application {
     private boolean saveFlag;
+    private boolean mouseMode = true;
+    // trueであれば、マウスを押したとき
+    // falseであれば、マウスドラッグ中
     private Canvas canvas;
     private Palette palette;
+    private MacroCommand history;
+
     public void start(Stage stage) throws Exception {
         saveFlag = false;
         canvas = new Canvas();
         palette = Palette.getPalette();
+        history = new MacroCommand();
         stage.setTitle("マップエディタ");
         stage.setWidth(1698);
         stage.setHeight(1024);
@@ -83,6 +90,7 @@ public class Main extends Application {
         stage.setScene(scene);
         stage.show();
     }
+
     private void initPalette(GridPane palettePane) {
         int length = palette.getPaletteLength();
         String url;
@@ -99,6 +107,7 @@ public class Main extends Application {
             }
         }
     }
+
     private void initCanvas(GridPane canvasPane) {
         for (int i = 0; i < canvas.WIDTH_MAX; i++) {
             for (int j = 0; j < canvas.HEIGHT_MAX; j++) {
@@ -110,6 +119,7 @@ public class Main extends Application {
             }
         }
     }
+
     private void initButtons(ButtonBar buttonBar, Stage stage) {
         ButtonX btnSave = new ButtonX(32, 32, "btnSave.png");
         ButtonX btnUndo = new ButtonX(32, 32, "btnUndo.png");
@@ -117,19 +127,38 @@ public class Main extends Application {
         btnSave.setOnAction(event -> saveFile());
         buttonBar.getButtons().addAll(btnSave, btnUndo, btnRedo);
     }
-    public void draw(MouseEvent event) {
-        DrawCommand cmd = new DrawCommand(canvas, event);
-        cmd.execute();
-        saveFlag = cmd.getFlag();
+
+    private void draw(MouseEvent event) {
+        String type = String.valueOf(event.getEventType());
+        if (type.equals("MOUSE_CLICKED")) {
+            if (mouseMode) {
+                ChipSetCommand cSetCmd = new ChipSetCommand(canvas);
+                history.add(cSetCmd);
+                DrawCommand cmd = new DrawCommand(canvas, event);
+                cmd.execute();
+                saveFlag = cmd.getFlag();
+                if (this.saveFlag == false) {
+                    this.saveFlag = false;
+                }                       
+            } else {
+                mouseMode = true;
+            }
+        } else {
+            DrawCommand cmd = new DrawCommand(canvas, event);
+            cmd.execute();
+        }
     }
-    public void openFile() {
+
+    private void openFile() {
         OpenFile of = new OpenFile();
         of.openFile(canvas);
     }
-    public void saveFile() {
+
+    private void saveFile() {
         SaveFile sf = new SaveFile();
         sf.saveFile(canvas);
     }
+
     private void endEdit(Stage stage, Event event) {
         if (saveFlag) {
             Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -146,6 +175,7 @@ public class Main extends Application {
             Platform.exit();
         }
     }
+
     public static void main(String[] args) {
         launch(args);
     }
