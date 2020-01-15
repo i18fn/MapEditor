@@ -1,16 +1,28 @@
 package command;
 
-import java.util.ArrayList;
+import java.util.Stack;
+import java.util.Iterator;
 
 public class MacroCommand implements Command {
-    private ArrayList<Command> commands;
+    private Stack<Command> commands;
     public MacroCommand() {
-        commands = new ArrayList<>();
+        commands = new Stack<>();
     }
     public void add(Command c) {
-        commands.add(c);
+        commands.push(c);
     }
     public void execute() {
-
+        Iterator it = commands.iterator();
+        while (it.hasNext()) {
+            ((Command)it.next()).execute();
+        }
+    }
+    public void undo() {
+        if (!commands.empty()) {
+            commands.pop().undo();
+        }
+    }
+    public void clear() {
+        commands.clear();
     }
 }

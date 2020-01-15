@@ -8,7 +8,6 @@ import javafx.application.Platform;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.event.Event;
-import javafx.event.EventType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -27,18 +26,19 @@ import java.util.Optional;
 
 public class Main extends Application {
     private boolean saveFlag;
-    private boolean mouseMode = true;
-    // trueであれば、マウスを押したとき
-    // falseであれば、マウスドラッグ中
+    private boolean mouseMode;
+    // trueであれば、描画中
     private Canvas canvas;
     private Palette palette;
     private MacroCommand history;
 
     public void start(Stage stage) throws Exception {
         saveFlag = false;
+        mouseMode = false;
         canvas = new Canvas();
         palette = Palette.getPalette();
         history = new MacroCommand();
+        
         stage.setTitle("マップエディタ");
         stage.setWidth(1698);
         stage.setHeight(1024);
@@ -123,30 +123,31 @@ public class Main extends Application {
     private void initButtons(ButtonBar buttonBar, Stage stage) {
         ButtonX btnSave = new ButtonX(32, 32, "btnSave.png");
         ButtonX btnUndo = new ButtonX(32, 32, "btnUndo.png");
-        ButtonX btnRedo = new ButtonX(32, 32, "btnRedo.png");
         btnSave.setOnAction(event -> saveFile());
-        buttonBar.getButtons().addAll(btnSave, btnUndo, btnRedo);
+        btnUndo.setOnAction(event -> undo());
+        buttonBar.getButtons().addAll(btnSave, btnUndo);
     }
 
-    private void draw(MouseEvent event) {
-        String type = String.valueOf(event.getEventType());
-        if (type.equals("MOUSE_CLICKED")) {
-            if (mouseMode) {
-                ChipSetCommand cSetCmd = new ChipSetCommand(canvas);
-                history.add(cSetCmd);
-                DrawCommand cmd = new DrawCommand(canvas, event);
-                cmd.execute();
-                saveFlag = cmd.getFlag();
-                if (this.saveFlag == false) {
-                    this.saveFlag = false;
-                }                       
-            } else {
-                mouseMode = true;
-            }
+    private void draw(MouseEvent event) {   
+        if (!mouseMode) {
+            // 描画中でなければ、(!mouseModeなら) 変更前の盤面を保存する
+            history.add(new saveFieldCommand(canvas));
+            mouseMode = true;
         } else {
-            DrawCommand cmd = new DrawCommand(canvas, event);
-            cmd.execute();
+            if (String.valueOf(event.getEventType()).equals("MOUSE_CLICKED")) {
+                mouseMode = false;
+            }
         }
+        DrawCommand cmd = new DrawCommand(canvas, event);
+        cmd.execute();
+        saveFlag = cmd.getFlag();
+        if (this.saveFlag == false) {
+            this.saveFlag = false;
+        } 
+    }
+
+    private void undo() {
+        history.undo();
     }
 
     private void openFile() {

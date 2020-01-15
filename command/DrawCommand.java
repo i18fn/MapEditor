@@ -31,6 +31,9 @@ public class DrawCommand implements Command {
             return;
         }
     }
+    public void undo() {
+        System.out.println("ERROR");
+    }
     public boolean getFlag() {
         return saveFlag;
     }
