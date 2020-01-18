@@ -14,15 +14,14 @@ public class History extends MacroCommand {
     public void undo() {
         if (!commands.empty()) {
             redoStack.push(new SaveFieldCommand(this.canvas));
-            Command c = commands.pop();
-            c.undo();
+            commands.pop().undo();
         }
     }
     public void redo() {
         if (!redoStack.empty()) {
-            Command c = redoStack.pop();
-            c.undo();
-            add(c);
+            add(new SaveFieldCommand(this.canvas));
+            redoStack.pop().undo();
+            
         }
     }
 }

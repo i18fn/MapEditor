@@ -12,7 +12,7 @@ public class MacroCommand implements Command {
         commands.push(c);
     }
     public void execute() {
-        Iterator it = commands.iterator();
+        Iterator<Command> it = commands.iterator();
         while (it.hasNext()) {
             ((Command)it.next()).execute();
         }

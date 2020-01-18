@@ -125,13 +125,20 @@ public class Main extends Application {
         }
     }
     private void initButtons(ButtonBar buttonBar, Stage stage) {
+        ButtonX btnNew = new ButtonX(32, 32, "btnNewFile.png");
+        ButtonX btnOpen = new ButtonX(32, 32, "btnOpenFile.png");
         ButtonX btnSave = new ButtonX(32, 32, "btnSave.png");
+        ButtonX btnDelete = new ButtonX(32, 32, "btnAllDelete.png");
         ButtonX btnUndo = new ButtonX(32, 32, "btnUndo.png");
         ButtonX btnRedo = new ButtonX(32, 32, "btnRedo.png");
+        ButtonX btnPlay = new ButtonX(32, 32, "btnGamePlay.png");
+        btnNew.setOnAction(event -> makeNewFile());
+        btnOpen.setOnAction(event -> openFile());
         btnSave.setOnAction(event -> saveFile());
+        btnDelete.setOnAction(event -> fieldAllDelete());
         btnUndo.setOnAction(event -> undo());
         btnRedo.setOnAction(event -> redo());
-        buttonBar.getButtons().addAll(btnSave, btnUndo, btnRedo);
+        buttonBar.getButtons().addAll(btnNew, btnOpen, btnSave, btnDelete, btnUndo, btnRedo, btnPlay);
     }
     private void draw(MouseEvent event) {   
         if (!mouseMode) {
