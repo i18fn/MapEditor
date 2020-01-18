@@ -8,13 +8,18 @@ import javafx.application.Platform;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.event.Event;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Label;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -30,14 +35,16 @@ public class Main extends Application {
     // trueであれば、描画中
     private Canvas canvas;
     private Palette palette;
-    private MacroCommand history;
+    private History history;
 
     public void start(Stage stage) throws Exception {
         saveFlag = false;
+        // trueなら終了時保存するかどうかを聞く
         mouseMode = false;
+        // trueなら描画中
         canvas = new Canvas();
         palette = Palette.getPalette();
-        history = new MacroCommand();
+        history = new History(canvas);
         
         stage.setTitle("マップエディタ");
         stage.setWidth(1698);
@@ -51,11 +58,11 @@ public class Main extends Application {
         MenuItem saveFile = new MenuItem("保存");
         MenuItem endEdit = new MenuItem("終了");
         MenuItem allDelete = new MenuItem("全消去");
-        // newFile.setOnAction(event -> makeNewFile());
+        newFile.setOnAction(event -> makeNewFile());
         openFile.setOnAction(event -> openFile());
         saveFile.setOnAction(event -> saveFile());
         endEdit.setOnAction(event -> endEdit(stage, event));
-        // allDelete.setOnAction(event -> fieldAllDelete());
+        allDelete.setOnAction(event -> fieldAllDelete());
         fileMenu.getItems().addAll(newFile, openFile, saveFile, endEdit);
         editMenu.getItems().addAll(allDelete);
         menuBar.getMenus().addAll(fileMenu, editMenu);
@@ -90,7 +97,6 @@ public class Main extends Application {
         stage.setScene(scene);
         stage.show();
     }
-
     private void initPalette(GridPane palettePane) {
         int length = palette.getPaletteLength();
         String url;
@@ -107,7 +113,6 @@ public class Main extends Application {
             }
         }
     }
-
     private void initCanvas(GridPane canvasPane) {
         for (int i = 0; i < canvas.WIDTH_MAX; i++) {
             for (int j = 0; j < canvas.HEIGHT_MAX; j++) {
@@ -119,19 +124,19 @@ public class Main extends Application {
             }
         }
     }
-
     private void initButtons(ButtonBar buttonBar, Stage stage) {
         ButtonX btnSave = new ButtonX(32, 32, "btnSave.png");
         ButtonX btnUndo = new ButtonX(32, 32, "btnUndo.png");
+        ButtonX btnRedo = new ButtonX(32, 32, "btnRedo.png");
         btnSave.setOnAction(event -> saveFile());
         btnUndo.setOnAction(event -> undo());
-        buttonBar.getButtons().addAll(btnSave, btnUndo);
+        btnRedo.setOnAction(event -> redo());
+        buttonBar.getButtons().addAll(btnSave, btnUndo, btnRedo);
     }
-
     private void draw(MouseEvent event) {   
         if (!mouseMode) {
             // 描画中でなければ、(!mouseModeなら) 変更前の盤面を保存する
-            history.add(new saveFieldCommand(canvas));
+            history.add(new SaveFieldCommand(canvas));
             mouseMode = true;
         } else {
             if (String.valueOf(event.getEventType()).equals("MOUSE_CLICKED")) {
@@ -145,21 +150,23 @@ public class Main extends Application {
             this.saveFlag = false;
         } 
     }
-
     private void undo() {
         history.undo();
     }
-
+    private void redo() {
+        history.redo();
+    }
     private void openFile() {
         OpenFile of = new OpenFile();
-        of.openFile(canvas);
+        if (of.openFile(canvas) == 1) {
+            history.clear();
+        }
     }
-
     private void saveFile() {
         SaveFile sf = new SaveFile();
         sf.saveFile(canvas);
+        saveFlag = false;
     }
-
     private void endEdit(Stage stage, Event event) {
         if (saveFlag) {
             Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -176,7 +183,54 @@ public class Main extends Application {
             Platform.exit();
         }
     }
-
+    private void fieldAllDelete() {
+        history.add(new SaveFieldCommand(canvas));
+        canvas.reset();
+    }
+    private void makeNewFile() {
+        askSizeStageShow();
+    }
+    private void askSizeStageShow() {
+        Stage askSizeStage = new Stage();
+        Label lblWidth = new Label(" 　幅");
+        Label lblHeight = new Label("　高さ");
+        Label lblAsk = new Label("作成するマップの大きさ");
+        lblWidth.setMinWidth(50);
+        lblHeight.setMinWidth(50);
+        lblAsk.setPadding(new Insets(5.0, 5.0, 5.0, 5.0));
+        Spinner<Integer> spinnerWidth = new Spinner<>();
+        Spinner<Integer> spinnerHeight = new Spinner<>();
+        spinnerWidth.setEditable(true);
+        spinnerHeight.setEditable(true);
+        spinnerWidth.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, canvas.WIDTH_MAX, canvas.WIDTH_MAX));
+        spinnerHeight.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, canvas.HEIGHT_MAX, canvas.HEIGHT_MAX));
+        spinnerWidth.setMaxWidth(120);
+        spinnerHeight.setMaxWidth(120);
+        spinnerWidth.setMaxHeight(40);
+        spinnerHeight.setMaxHeight(40);
+        Button btnOK = new Button("OK");
+        Button btnCancel = new Button("キャンセル");
+        btnOK.setMinWidth(40);
+        btnCancel.setMinWidth(40);
+        btnOK.setOnAction(event -> okBtnAction(askSizeStage, spinnerWidth.getValue(), spinnerHeight.getValue()));
+        btnCancel.setOnAction(event -> askSizeStage.close());
+        HBox btnHBox = new HBox();
+        HBox widthHBox = new HBox();
+        HBox heightHBox = new HBox();
+        btnHBox.getChildren().addAll(btnOK, btnCancel);
+        widthHBox.getChildren().addAll(lblWidth, spinnerWidth);
+        widthHBox.setAlignment(Pos.CENTER);
+        heightHBox.getChildren().addAll(lblHeight, spinnerHeight);
+        heightHBox.setAlignment(Pos.CENTER);
+        VBox root = new VBox();
+        root.getChildren().addAll(lblAsk, widthHBox, heightHBox, btnHBox);
+        askSizeStage.setScene(new Scene(root));
+        askSizeStage.show();        
+    }
+    private void okBtnAction(Stage stage, int width, int height) {
+        canvas.sizeChange(width, height);
+        stage.close();
+    }
     public static void main(String[] args) {
         launch(args);
     }

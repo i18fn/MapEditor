@@ -4,7 +4,7 @@ import java.util.Stack;
 import java.util.Iterator;
 
 public class MacroCommand implements Command {
-    private Stack<Command> commands;
+    protected Stack<Command> commands;
     public MacroCommand() {
         commands = new Stack<>();
     }

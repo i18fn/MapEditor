@@ -16,6 +16,7 @@ public class Canvas {
         return this.height;
     }
     public void sizeChange(int width, int height) {
+        reset();
         this.width = width;
         this.height = height;
         fieldHiding();
@@ -38,6 +39,12 @@ public class Canvas {
         palette.setImage(chipNumber);
         mapField[x][y].setImage(palette.getMapChips(chipNumber));
         mapField[x][y].setFieldNumber(chipNumber);
-
+    }
+    public void reset() {
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                setChip(0, i, j);
+            }
+        }
     }
 }

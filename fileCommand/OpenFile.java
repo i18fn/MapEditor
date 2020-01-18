@@ -10,7 +10,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 
 public class OpenFile {
-    public void openFile(Canvas canvas) {
+    public int openFile(Canvas canvas) {
         FileChooser fc = new FileChooser();
         fc.setTitle("ファイル選択");
         fc.setInitialDirectory(new File(System.getProperty("user.home")));
@@ -18,8 +18,9 @@ public class OpenFile {
         try {
             inputToFile(fc.showOpenDialog(null), canvas);
         } catch(NullPointerException e) {
-            System.out.println("ファイルを指定しなかった。");
+            return -1;
         }
+        return 1;
     }
     private void inputToFile(File file, Canvas canvas) {
         String data;

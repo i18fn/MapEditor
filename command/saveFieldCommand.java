@@ -2,10 +2,10 @@ package command;
 
 import mapfield.*;
 
-public class saveFieldCommand implements Command {
+public class SaveFieldCommand implements Command {
     private int[][] oldCanvas;
     private Canvas canvas;
-    public saveFieldCommand(Canvas canvas) {
+    public SaveFieldCommand(Canvas canvas) {
         oldCanvas = new int[canvas.getWidth()][canvas.getHeight()];
         for (int i = 0; i < oldCanvas[0].length; i++) {
             for (int j = 0; j < oldCanvas.length; j++) {
@@ -14,7 +14,9 @@ public class saveFieldCommand implements Command {
         }
         this.canvas = canvas;
     }
-    public void execute() {}
+    public void execute() {
+
+    }
     public void undo() {
         for (int i = 0; i < oldCanvas[0].length; i++) {
             for (int j = 0; j < oldCanvas.length; j++) {
