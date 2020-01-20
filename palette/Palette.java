@@ -11,6 +11,7 @@ public class Palette {
     private Image[] mapChips = new Image[paletteLength];
     public ImageView[] paletteIv = new ImageView[paletteLength];
     private Image nowChip = mapChips[nowChipNumber];
+    public ImageView nowView = new ImageView(nowChip);
     private Palette() {}
     public static Palette getPalette() {
         return palette;
@@ -28,17 +29,13 @@ public class Palette {
         paletteIv[I].setOnMouseClicked(event -> chipChange(I));
         mapChips[I] = new Image(imageUrl);
     }
-    private void chipChange(int chip) {
+    public void chipChange(int chip) {
         nowChipNumber = chip;
         nowChip = mapChips[nowChipNumber];
+        nowView.setImage(mapChips[chip]);
     }
     public int getNowChipNumber() {
         return nowChipNumber;
-    }
-    public void setImage(int chipNumber) {
-        if (this.nowChipNumber != chipNumber) {
-            this.nowChip = mapChips[chipNumber];
-        }
     }
     public Image getNowImage() {
         return nowChip;

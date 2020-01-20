@@ -22,6 +22,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -53,19 +54,25 @@ public class Main extends Application {
         MenuBar menuBar = new MenuBar();
         Menu fileMenu = new Menu("ファイル");
         Menu editMenu = new Menu("編集");
-        MenuItem newFile = new MenuItem("新規作成");
-        MenuItem openFile = new MenuItem("開く");
-        MenuItem saveFile = new MenuItem("保存");
-        MenuItem endEdit = new MenuItem("終了");
-        MenuItem allDelete = new MenuItem("全消去");
-        newFile.setOnAction(event -> makeNewFile());
-        openFile.setOnAction(event -> openFile());
-        saveFile.setOnAction(event -> saveFile());
-        endEdit.setOnAction(event -> endEdit(stage, event));
-        allDelete.setOnAction(event -> fieldAllDelete());
-        fileMenu.getItems().addAll(newFile, openFile, saveFile, endEdit);
-        editMenu.getItems().addAll(allDelete);
+        MenuItem newFileiItem = new MenuItem("新規作成");
+        MenuItem openFileiItem = new MenuItem("開く");
+        MenuItem saveFileiItem = new MenuItem("保存");
+        MenuItem endEditItem = new MenuItem("終了");
+        MenuItem allDeleteItem = new MenuItem("全消去");
+        MenuItem undoItem = new MenuItem("元に戻す");
+        MenuItem redoItem = new MenuItem("やり直し");
+        newFileiItem.setOnAction(event -> makeNewFile());
+        openFileiItem.setOnAction(event -> openFile());
+        saveFileiItem.setOnAction(event -> saveFile());
+        endEditItem.setOnAction(event -> endEdit(stage, event));
+        allDeleteItem.setOnAction(event -> fieldAllDelete());
+        fileMenu.getItems().addAll(newFileiItem, openFileiItem, saveFileiItem, endEditItem);
+        editMenu.getItems().addAll(undoItem, redoItem, allDeleteItem);
         menuBar.getMenus().addAll(fileMenu, editMenu);
+        newFileiItem.setAccelerator(KeyCombination.valueOf("Shortcut+n"));
+        openFileiItem.setAccelerator(KeyCombination.valueOf("Shortcut+o"));
+        undoItem.setAccelerator(KeyCombination.valueOf("Shortcut+z"));
+        redoItem.setAccelerator(KeyCombination.valueOf("Shortcut+y"));
 
         GridPane palettePane = new GridPane();
         GridPane canvasPane = new GridPane();
@@ -80,8 +87,7 @@ public class Main extends Application {
         Label lblNowChip = new Label("現在のマップチップ  ");
         lblNowChip.setFont(new Font(20));
         HBox nowChipPane = new HBox();
-        ImageView nowChip = new ImageView(palette.getNowImage()); 
-        nowChipPane.getChildren().addAll(lblNowChip, nowChip);
+        nowChipPane.getChildren().addAll(lblNowChip, palette.nowView);
 
         Label lblMapChip = new Label("マップチップ");
         lblMapChip.setFont(new Font(25));
@@ -92,6 +98,7 @@ public class Main extends Application {
         vBox.setSpacing(5.0);
         hBox.getChildren().addAll(canvasPane, vBox);
         root.getChildren().addAll(menuBar, buttonBar, hBox);
+
         Scene scene = new Scene(root);
         stage.setOnCloseRequest(event -> endEdit(stage, event));
         stage.setScene(scene);
@@ -237,6 +244,9 @@ public class Main extends Application {
     private void okBtnAction(Stage stage, int width, int height) {
         canvas.sizeChange(width, height);
         stage.close();
+    }
+    private void testPlay() {
+        canvas.getMapDataInt();
     }
     public static void main(String[] args) {
         launch(args);

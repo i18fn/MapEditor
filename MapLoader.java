@@ -22,7 +22,7 @@ public class MapLoader {
             fRead.close();
             return mapfield;
         } catch (IOException e) {
-            System.out.println(e);
+            System.out.println(filename + " IS NOT FOUND");
         }
         int[][] temp = {
                         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
