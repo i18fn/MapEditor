@@ -145,6 +145,7 @@ public class Main extends Application {
         btnDelete.setOnAction(event -> fieldAllDelete());
         btnUndo.setOnAction(event -> undo());
         btnRedo.setOnAction(event -> redo());
+        btnPlay.setOnAction(event -> testPlay());
         buttonBar.getButtons().addAll(btnNew, btnOpen, btnSave, btnDelete, btnUndo, btnRedo, btnPlay);
     }
     private void draw(MouseEvent event) {   
@@ -246,7 +247,8 @@ public class Main extends Application {
         stage.close();
     }
     private void testPlay() {
-        canvas.getMapDataInt();
+        Stage gameStage = new Stage();
+        TestPlay.start(gameStage, canvas.getMapDataInt());
     }
     public static void main(String[] args) {
         launch(args);
