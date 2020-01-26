@@ -21,7 +21,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
@@ -248,7 +247,7 @@ public class Main extends Application {
     }
     private void testPlay() {
         Stage gameStage = new Stage();
-        TestPlay.start(gameStage, canvas.getMapDataInt());
+        TestPlay testPlay = new TestPlay(gameStage, canvas.getMapDataInt());
     }
     public static void main(String[] args) {
         launch(args);
