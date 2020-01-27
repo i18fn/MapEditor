@@ -56,38 +56,47 @@ public class TestPlay {
         } else {
             vy = 1;
         }
-        // int y = (int)marioImage.getLayoutY();
-        // if (!onFloor) {
-        //     vy += 1;
-        // }
-        // onFloor = collisionY(y + vy);
-        // if (onFloor) {
-           
-        // }
     }
     public void move(KeyEvent e) {
-        double x = marioImage.getX();
+        int x = (int)marioImage.getX();
         switch (e.getCode()) {
             case RIGHT:
-                marioImage.setX(x + 8);
+                if (collisionX(x + 8)) {
+                    marioImage.setX(x + 8);
+                }
                 break;
             case LEFT:
-                marioImage.setX(x - 8);
+                if (collisionX(x - 8)) {
+                    marioImage.setX(x - 8);
+                }
                 break;
             case UP:
+                if (!onFloor) {
+                    vy = -24;
+                }
                 break;
             default:
                 return;
         }
     }
-    public void jump() {
+    private boolean collisionX(int newX){
+        int y = (int)marioImage.getY();
+        try {
+            if (map[newX/32 + 1][y/32].isManaged() || map[newX/32 ][y/32].isManaged()) {
+                // 床が無い場合
+                return false;
+            } else {
+                // 床が有る場合
+                return true;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return true;
+        }
     }
-    private void collisionX(){}
     private boolean collisionY(int newY){
         int x = (int)marioImage.getX();
-        System.out.println("x:" + x + "  y:" + newY);
         try {
-            if (map[x/32][newY/32 + 1].isManaged()) {
+            if (map[x/32][newY/32 + 1].isManaged() || map[x/32][newY/32].isManaged()) {
                 // 床が無い場合
                 return false;
             } else {
