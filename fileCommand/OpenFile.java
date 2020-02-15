@@ -3,7 +3,6 @@ package filecommand;
 import editorlib.*;
 import mapfield.Canvas;
 import javafx.stage.FileChooser;
- 
 import java.io.File;
 import java.io.FileReader;
 import java.io.BufferedReader;
@@ -28,6 +27,7 @@ public class OpenFile {
         try {
             BufferedReader fRead;
             fRead = new BufferedReader(new FileReader(file));
+            // 1,2行目のデータの幅と高さの値を読み込む
             int mapWidth = Integer.parseInt(fRead.readLine());
             int mapHeight = Integer.parseInt(fRead.readLine());
             canvas.sizeChange(mapWidth, mapHeight);
@@ -43,12 +43,13 @@ public class OpenFile {
                     canvas.setChip(mapinfo[k][j], k, j);
                 }
             }
-
         } catch (IOException e) {
             System.out.println(e);
         }
     }
     private void splitInt(String strIndex, int[][] intIndex, int row) {
+        // 一行ずつ読み込み、String.split()メソッドで一文字ごとに分割して
+        // 16進数(String)を10進数(int)に変換する
         String[] str = strIndex.split("");
         for (int i = 0; i < str.length; i++) {
             intIndex[i][row] = Hex.HexToDeci(str[i].charAt(0));

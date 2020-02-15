@@ -21,7 +21,6 @@ public class History extends MacroCommand {
         if (!redoStack.empty()) {
             add(new SaveFieldCommand(this.canvas));
             redoStack.pop().undo();
-            
         }
     }
 }

@@ -6,6 +6,7 @@ import javafx.scene.image.ImageView;
 
 public class Palette {
     private static Palette palette = new Palette();
+    // 現在選択しているマップチップの番号
     private int nowChipNumber = 0;
     private int paletteLength = 16;
     private Image[] mapChips = new Image[paletteLength];

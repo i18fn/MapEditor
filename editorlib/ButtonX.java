@@ -5,6 +5,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class ButtonX extends Button {
+    
     public ButtonX() {
         super();
     }
@@ -14,6 +15,7 @@ public class ButtonX extends Button {
         setPrefHeight(height);
     }
     public ButtonX(double width, double height, String imageUrl) {
+        // Mainクラスの記述を減らすためにコンストラクタで画像のパスの取得をする
         super();
         setPrefWidth(width);
         setPrefHeight(height);

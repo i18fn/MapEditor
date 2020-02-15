@@ -4,6 +4,7 @@ import mapfield.*;
 import javafx.scene.input.MouseEvent;
 
 public class DrawCommand implements Command {
+    // 描画を表すクラス(必要性があるか不明)
     private Canvas canvas;
     private int x;
     private int y;
@@ -31,9 +32,7 @@ public class DrawCommand implements Command {
             return;
         }
     }
-    public void undo() {
-        System.out.println("ERROR");
-    }
+    public void undo() {}
     public boolean getFlag() {
         return saveFlag;
     }

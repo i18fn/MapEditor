@@ -22,6 +22,7 @@ public class Canvas {
         fieldHiding();
     }
     private void fieldHiding() {
+        // サイズを変更するためにキャンバスに表示されているMapChipを非表示にする
         for (int i = 0; i < WIDTH_MAX; i++) {
             for (int j = 0; j < HEIGHT_MAX; j++) {
                 if (i >= width || j >= height) {
@@ -41,6 +42,7 @@ public class Canvas {
         mapField[x][y].setFieldNumber(chipNumber);
     }
     public int[][] getMapDataInt() {
+        // TestPlay用に現在のマップデータをint[][]型に変換する
         int[][] data = new int[this.width][this.height];
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
@@ -50,6 +52,7 @@ public class Canvas {
         return data;
     }
     public void reset() {
+        // キャンバス全体を白一色にする
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 setChip(0, i, j);

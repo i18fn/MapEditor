@@ -3,6 +3,16 @@ import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.IOException;
 
+// --------------------------------------------------
+// マップエディタで作成したマップデータを
+// int型の二次元配列に変換するプログラムです。
+// 
+// **使い方**
+// このMapLoaderクラスをプロジェクトフォルダ内にコピーし
+// プログラム内で以下のように記述します。
+//     int[][] data = MapLoader.mapLoad(filename);
+// --------------------------------------------------
+
 public class MapLoader {
     private static char[] hexChar = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
     public static int[][] mapLoad(String filename){

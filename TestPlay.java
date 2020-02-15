@@ -48,6 +48,7 @@ public class TestPlay {
         timeline.stop(); 
     }
     private void freeFall() {
+        // 重力によるy軸方向の移動
         int y = (int)marioImage.getY();
         onFloor = collisionY(y + vy);
         if (onFloor) {
@@ -80,6 +81,7 @@ public class TestPlay {
         }
     }
     private boolean collisionX(int newX){
+        // x方向の衝突判定
         int y = (int)marioImage.getY();
         try {
             if (map[newX/32 + 1][y/32].isManaged() || map[newX/32 ][y/32].isManaged()) {
@@ -94,6 +96,7 @@ public class TestPlay {
         }
     }
     private boolean collisionY(int newY){
+        // y方向の衝突判定
         int x = (int)marioImage.getX();
         try {
             if (map[x/32][newY/32 + 1].isManaged() || map[x/32][newY/32].isManaged()) {

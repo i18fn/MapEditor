@@ -16,6 +16,7 @@ public class SaveFile {
         outputToFile(fc.showSaveDialog(null), canvas); 
     }
     private void outputToFile(File file, Canvas canvas) {
+        // ファイルにキャンバスのデータを16進数で出力する
         String str = mapInfoToString(canvas);
         try {
             if (file != null) {
@@ -23,6 +24,7 @@ public class SaveFile {
                     file.createNewFile();
                 }
                 FileWriter fileWriter = new FileWriter(file);
+                // ファイルの1行目は幅、2行目は高さを表す
                 fileWriter.write(Integer.toString(canvas.getWidth()));
                 fileWriter.write("\n");
                 fileWriter.write(Integer.toString(canvas.getHeight()));
@@ -41,7 +43,8 @@ public class SaveFile {
         StringBuilder buf = new StringBuilder();
         for (int i = 0; i < canvas.getHeight(); i++) {
             for (int j = 0; j < canvas.getWidth(); j++) {
-                buf.append(String.valueOf(Hex.deciToHex(canvas.mapField[j][i].getFieldNumber())));
+                // キャンバスのマップチップ番号を取得し、16進数に変換して出力するファイルに結合していく
+                buf.append(Hex.deciToHex(canvas.mapField[j][i].getFieldNumber()));
             }
             buf.append("\n");
         }

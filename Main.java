@@ -30,18 +30,20 @@ import javafx.scene.layout.HBox;
 import java.util.Optional;
 
 public class Main extends Application {
+    // trueであれば、終了時保存するか尋ねるダイアログを表示
     private boolean saveFlag;
-    private boolean mouseMode;
     // trueであれば、描画中
+    private boolean mouseMode;
+    // 実際にマップを描くキャンバス部分のクラス
     private Canvas canvas;
+    // マップチップを選択できるパレット部分のクラス
     private Palette palette;
+    // UndoRedo用のコマンドの履歴を保存するクラス
     private History history;
 
     public void start(Stage stage) throws Exception {
         saveFlag = false;
-        // trueなら終了時保存するかどうかを聞く
         mouseMode = false;
-        // trueなら描画中
         canvas = new Canvas();
         palette = Palette.getPalette();
         history = new History(canvas);
@@ -50,6 +52,7 @@ public class Main extends Application {
         stage.setWidth(1698);
         stage.setHeight(1024);
 
+        // MenuBarの名前や挙動などの設定
         MenuBar menuBar = new MenuBar();
         Menu fileMenu = new Menu("ファイル");
         Menu editMenu = new Menu("編集");
@@ -73,26 +76,27 @@ public class Main extends Application {
         undoItem.setAccelerator(KeyCombination.valueOf("Shortcut+z"));
         redoItem.setAccelerator(KeyCombination.valueOf("Shortcut+y"));
 
+        //レイアウトペインの生成
         GridPane palettePane = new GridPane();
         GridPane canvasPane = new GridPane();
         GridPane buttonPane = new GridPane();
-
         ButtonBar buttonBar = new ButtonBar();
+        HBox nowChipPane = new HBox();
+        HBox hBox = new HBox();
+        VBox vBox = new VBox();
+        VBox root = new VBox();
+
         buttonBar.setMinSize(50, 50);
         initPalette(palettePane);
         initCanvas(canvasPane);
         initButtons(buttonBar, stage);
-
         Label lblNowChip = new Label("現在のマップチップ  ");
         lblNowChip.setFont(new Font(20));
-        HBox nowChipPane = new HBox();
         nowChipPane.getChildren().addAll(lblNowChip, palette.nowView);
-
         Label lblMapChip = new Label("マップチップ");
         lblMapChip.setFont(new Font(25));
-        HBox hBox = new HBox();
-        VBox vBox = new VBox();
-        VBox root = new VBox();
+
+        // レイアウトへの要素の追加
         vBox.getChildren().addAll(lblMapChip, palettePane, nowChipPane, buttonPane);
         vBox.setSpacing(5.0);
         hBox.getChildren().addAll(canvasPane, vBox);
@@ -147,7 +151,8 @@ public class Main extends Application {
         btnPlay.setOnAction(event -> testPlay());
         buttonBar.getButtons().addAll(btnNew, btnOpen, btnSave, btnDelete, btnUndo, btnRedo, btnPlay);
     }
-    private void draw(MouseEvent event) {   
+    private void draw(MouseEvent event) { 
+        // マップチップの描画・現在の盤面を履歴に追加  
         if (!mouseMode) {
             // 描画中でなければ、(!mouseModeなら) 変更前の盤面を保存する
             history.add(new SaveFieldCommand(canvas));
@@ -171,17 +176,20 @@ public class Main extends Application {
         history.redo();
     }
     private void openFile() {
+        // ファイルを開く用の処理
         OpenFile of = new OpenFile();
         if (of.openFile(canvas) == 1) {
             history.clear();
         }
     }
     private void saveFile() {
+        // ファイルを保存する用の処理
         SaveFile sf = new SaveFile();
         sf.saveFile(canvas);
         saveFlag = false;
     }
     private void endEdit(Stage stage, Event event) {
+        // エディット終了用の処理
         if (saveFlag) {
             Alert alert = new Alert(AlertType.CONFIRMATION);
             alert.setTitle("マップエディタ");
@@ -198,6 +206,7 @@ public class Main extends Application {
         }
     }
     private void fieldAllDelete() {
+        // 全消去処理のメソッド
         history.add(new SaveFieldCommand(canvas));
         canvas.reset();
     }
@@ -205,6 +214,7 @@ public class Main extends Application {
         askSizeStageShow();
     }
     private void askSizeStageShow() {
+        // 新規作成するファイルのサイズを設定するウィンドウの作成
         Stage askSizeStage = new Stage();
         Label lblWidth = new Label(" 　幅");
         Label lblHeight = new Label("　高さ");
@@ -242,6 +252,7 @@ public class Main extends Application {
         askSizeStage.show();        
     }
     private void okBtnAction(Stage stage, int width, int height) {
+        // askSizeStageShowメソッドで作成したウィンドウのOKボタンの処理
         canvas.sizeChange(width, height);
         stage.close();
     }
