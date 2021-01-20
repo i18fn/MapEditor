@@ -29,6 +29,15 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import java.util.Optional;
 
+/**
+ * TODO: クラスの関係を整理する 
+ * TODO: テストプレイを正しく動作するようにする
+ * TODO: ショートカットキーをつける
+ * TODO: マップの最大サイズを広げる
+ * TODO: マップチップを自由に設定できるようにする
+ * TODO: バイナリで出力するようにする
+ * TODO: GitHubにライセンスをつける
+ */
 public class Main extends Application {
     // trueであれば、終了時保存するか尋ねるダイアログを表示
     private boolean saveFlag;
